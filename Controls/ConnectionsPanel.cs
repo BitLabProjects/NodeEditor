@@ -79,8 +79,8 @@ namespace NodeEditor.Controls {
           //childSize = new Size((childBottomRight.X - childOrigin.X) / zoom,
           //                     (childBottomRight.Y - childOrigin.Y) / zoom);
 
-          var verticalOutputOffset = 36.0 + 19.0 * connection.FromNode.GetOutputIndex(connection.FromNodeOutput);
-          var verticalInputOffset = 36.0 + 19.0 * connection.ToNode.GetInputIndex(connection.ToNodeInput);
+          var verticalOutputOffset = 37.0 + 20.0 * connection.FromNode.GetOutputIndex(connection.FromNodeOutput);
+          var verticalInputOffset = 37.0 + 20.0 * connection.ToNode.GetInputIndex(connection.ToNodeInput);
           childOrigin = new Point(fromNodeOrigin.X + fromNodeSize.Width, 
                                   fromNodeOrigin.Y + verticalOutputOffset * zoom);
           childSize = new Size(toNodeOrigin.X - childOrigin.X,
@@ -176,14 +176,23 @@ namespace NodeEditor.Controls {
 
       //Pen shapeOutlinePen = new Pen(new SolidColorBrush(Color.FromArgb(255, 114, 234, 114)), 12);
       Pen shapeOutlinePen = new Pen(new SolidColorBrush(Color.FromArgb(255, 100, 200, 100)), 10);
-      Pen shapeInlinePen = new Pen(Brushes.PaleGreen, 6);
+      Pen shapeInlinePen = new Pen(new SolidColorBrush(Color.FromArgb(255, 152, 251, 152)), 6);
+      Pen shapeOutlinePen2 = new Pen(new SolidColorBrush(Color.FromArgb(255, 0, 255, 0)), 10);
+      Pen shapeInlinePen2 = new Pen(new SolidColorBrush(Color.FromArgb(255, 0, 230, 0)), 6);
       shapeOutlinePen.Freeze();
       shapeInlinePen.Freeze();
+      shapeOutlinePen2.Freeze();
+      shapeInlinePen2.Freeze();
       // Obtain a DrawingContext from 
       // the DrawingGroup.
       using (DrawingContext dc = mVisual.RenderOpen()) {
         dc.DrawGeometry(Brushes.Green, shapeOutlinePen, geo);
         dc.DrawGeometry(Brushes.Green, shapeInlinePen, geo);
+
+        dc.DrawLine(shapeOutlinePen2, new Point(-10, -2), new Point(0, -2));
+        dc.DrawLine(shapeInlinePen2, new Point(-10, -2), new Point(0, -2));
+        dc.DrawLine(shapeOutlinePen2, new Point(finalRect.Width + 10, finalRect.Height - 2), new Point(finalRect.Width, finalRect.Height - 2));
+        dc.DrawLine(shapeInlinePen2, new Point(finalRect.Width + 10, finalRect.Height - 2), new Point(finalRect.Width, finalRect.Height - 2));
       }
     }
 
