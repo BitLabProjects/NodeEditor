@@ -60,6 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\CartesianPanel.cs" />
+    <Compile Include="Controls\ConnectionPath.cs" />
     <Compile Include="Controls\ConnectionsPanel.cs" />
     <Compile Include="Controls\NodeEditorControl.cs" />
     <Compile Include="Geometry\View2D.cs" />

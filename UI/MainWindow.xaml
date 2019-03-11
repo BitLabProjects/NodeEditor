@@ -44,9 +44,6 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Grid Margin="0 4 0 0">
-                        <!--<Border HorizontalAlignment="Left" VerticalAlignment="Center" Width="8" Height="10"
-                                BorderThickness="0 1" BorderBrush="#B064C864"
-                                Background="#A098FB98" />-->
                         <StackPanel Orientation="Horizontal" Margin="4 0 10 0">
                           <Border BorderThickness="1" BorderBrush="#CC872C" Background="#FF9400" CornerRadius="2" Width="10" Height="10" VerticalAlignment="Center" />
                           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="4 0 0 0" />
@@ -61,9 +58,6 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Grid Margin="0 4 0 0">
-                        <!--<Border HorizontalAlignment="Right" VerticalAlignment="Center" Width="8" Height="10"
-                                BorderThickness="0 1" BorderBrush="#B064C864"
-                                Background="#A098FB98" />-->
                         <StackPanel Orientation="Horizontal" Margin="10 0 4 0">
                           <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="0 0 4 0" />
                           <Border BorderThickness="1" BorderBrush="#1FA0D3" Background="#00B6FF" CornerRadius="2" Width="10" Height="10" VerticalAlignment="Center" />
@@ -86,12 +80,33 @@
       </controls:NodeEditorControl.ConnectionContainerStyle>
       <controls:NodeEditorControl.ConnectionTemplate>
         <DataTemplate>
-          <!--<Border Background="#80F00000" BorderThickness="1" BorderBrush="#F00000" CornerRadius="1" MinWidth="50" MinHeight="50">
-            
-          </Border>-->
-          <Border>
-            <controls:CustomPath />
-          </Border>
+          <controls:ConnectionPath>
+            <controls:ConnectionPath.Effect>
+              <DropShadowEffect ShadowDepth="2" Color="#000" />
+            </controls:ConnectionPath.Effect>
+            <controls:ConnectionPath.Brush>
+              <SolidColorBrush x:Name="brush" Color="#888"/>
+            </controls:ConnectionPath.Brush>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#888" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState Name="MouseOver">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#64C864" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState Name="Drag">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#44A844" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </controls:ConnectionPath>
         </DataTemplate>
       </controls:NodeEditorControl.ConnectionTemplate>
     </controls:NodeEditorControl>
