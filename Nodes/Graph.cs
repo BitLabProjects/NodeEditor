@@ -15,5 +15,11 @@ namespace NodeEditor.Nodes {
       this.Nodes = nodes;
       this.Connections = connections;
     }
+
+    #region Manipulation
+    public Graph RemoveConnection(Connection c) {
+      return new Graph(Nodes, Connections.Remove(c));
+    }
+    #endregion
   }
 }

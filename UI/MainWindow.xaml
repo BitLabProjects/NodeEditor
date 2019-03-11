@@ -80,7 +80,7 @@
       </controls:NodeEditorControl.ConnectionContainerStyle>
       <controls:NodeEditorControl.ConnectionTemplate>
         <DataTemplate>
-          <controls:ConnectionPath>
+          <controls:ConnectionPath DoubleClickCommand="{Binding RemoveConnectionCommand, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
             <controls:ConnectionPath.Effect>
               <DropShadowEffect ShadowDepth="2" Color="#000" />
             </controls:ConnectionPath.Effect>

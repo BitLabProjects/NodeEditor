@@ -44,6 +44,16 @@ namespace NodeEditor.Controls
     }
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+      if (e.ClickCount == 2) {
+        if (DoubleClickCommand != null) {
+          if (DoubleClickCommand.CanExecute(DataContext)) {
+            DoubleClickCommand.Execute(DataContext);
+            e.Handled = true;
+            return;
+          }
+        }
+      }
+
       if (CaptureMouse()) {
         mIsDragging = true;
         mDragLastPoint = e.GetPosition(this);
@@ -81,6 +91,15 @@ namespace NodeEditor.Controls
     }
     public static readonly DependencyProperty BrushProperty =
         DependencyProperty.Register("Brush", typeof(Brush), typeof(ConnectionPath), new FrameworkPropertyMetadata((Brush)null, FrameworkPropertyMetadataOptions.AffectsRender));
+    #endregion
+
+    #region "Event commands"
+    public ICommand DoubleClickCommand {
+      get { return (ICommand)GetValue(DoubleClickCommandProperty); }
+      set { SetValue(DoubleClickCommandProperty, value); }
+    }
+    public static readonly DependencyProperty DoubleClickCommandProperty =
+        DependencyProperty.Register("DoubleClickCommand", typeof(ICommand), typeof(ConnectionPath), new PropertyMetadata(null));
     #endregion
 
     protected override void OnRender(DrawingContext drawingContext) {
