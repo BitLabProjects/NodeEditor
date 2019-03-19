@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NodeEditor.Nodes;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,29 +105,38 @@ namespace NodeEditor.Controls
     #endregion
 
     protected override void OnRender(DrawingContext drawingContext) {
+      var parentPanel = VisualTreeUtils.GetParent<ConnectionsPanel>(this);
+      if (parentPanel == null)
+        return;
+
+      var connection = DataContext as Connection;
+      var layoutInfo = parentPanel.GetLayoutInfo(connection);
+      var dx = (layoutInfo.toPoint.X - layoutInfo.fromPoint.X) / parentPanel.Zoom;
+      var dy = (layoutInfo.toPoint.Y - layoutInfo.fromPoint.Y) / parentPanel.Zoom;
+
       var figure = new PathFigure();
       figure.IsClosed = false;
       figure.IsFilled = false;
       figure.StartPoint = new Point(0, 0);
 
       const float margin = 10;
-      var height = RenderSize.Height;
-      var width = RenderSize.Width - 2 * margin;
+      var height = dy;
+      var width = dx - 2 * margin;
       Point[] points;
       if (height > width) {
         var displacement = height - width;
         points = new Point[] { new Point(margin, 0),
                                new Point(margin + width / 2, width / 2),
                                new Point(margin + width / 2, width / 2 + displacement),
-                               new Point(RenderSize.Width - margin, RenderSize.Height),
-                               new Point(RenderSize.Width, RenderSize.Height) };
+                               new Point(dx - margin, dy),
+                               new Point(dx, dy) };
       } else {
         var displacement = width - height;
         points = new Point[] { new Point(margin, 0),
                                new Point(margin + height / 2, height / 2),
                                new Point(margin + height / 2 + displacement, height / 2),
-                               new Point(RenderSize.Width - margin, RenderSize.Height),
-                               new Point(RenderSize.Width, RenderSize.Height) };
+                               new Point(dx - margin, dy),
+                               new Point(dx, dy) };
       }
 
       figure.Segments.Add(new PolyLineSegment(points, true));
@@ -143,8 +154,12 @@ namespace NodeEditor.Controls
         shapeOutlinePen2 = shapeOutlinePen;
       }
       drawingContext.DrawGeometry(null, shapeOutlinePen, geo);
-      drawingContext.DrawLine(shapeOutlinePen2, new Point(-margin, -2), new Point(0, -2));
-      drawingContext.DrawLine(shapeOutlinePen2, new Point(RenderSize.Width + margin, RenderSize.Height - 2), new Point(RenderSize.Width, RenderSize.Height - 2));
+      if (connection.FromNode != null) {
+        drawingContext.DrawLine(shapeOutlinePen2, new Point(-margin, -2), new Point(0, -2));
+      }
+      if (connection.ToNode != null) {
+        drawingContext.DrawLine(shapeOutlinePen2, new Point(dx + margin, dy - 2), new Point(dx, dy - 2));
+      }
     }
 
     private Color getMultipliedAlpha255(Color input) {

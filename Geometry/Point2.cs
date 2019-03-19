@@ -13,5 +13,16 @@ namespace NodeEditor.Geometry {
       this.X = x;
       this.Y = y;
     }
+
+    public static Point2 operator -(Point2 point) {
+      return new Point2(-point.X, -point.Y);
+    }
+
+    public static Point2 operator -(Point2 point1, Point2 point2) {
+      return new Point2(point1.X - point2.X, point1.Y - point2.Y);
+    }
+    public static Point2 operator +(Point2 point1, Point2 point2) {
+      return new Point2(point1.X + point2.X, point1.Y + point2.Y);
+    }
   }
 }

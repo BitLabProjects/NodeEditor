@@ -64,22 +64,4 @@ namespace NodeEditor.UI {
       DataContext = (DataContext as Graph).RemoveConnection(conn as Connection);
     });
   }
-
-  public class DelegateCommand : ICommand {
-
-    private readonly Action<object> action;
-    public DelegateCommand(Action<object> action) {
-      this.action = action;
-    }
-
-    public event EventHandler CanExecuteChanged;
-
-    public bool CanExecute(object parameter) {
-      return true;
-    }
-
-    public void Execute(object parameter) {
-      action(parameter);
-    }
-  }
 }

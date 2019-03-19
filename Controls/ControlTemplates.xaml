@@ -36,6 +36,9 @@
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
             </ItemsControl>
+
+            <local:ConnectionsPanel x:Name="PreviewPanel" Panel.ZIndex="-1"
+                                    Zoom="{TemplateBinding Zoom}" Viewport="{TemplateBinding Viewport}"/>
           </Grid>
         </ControlTemplate>
       </Setter.Value>

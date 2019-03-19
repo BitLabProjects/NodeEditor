@@ -7,31 +7,44 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using NodeEditor.Controls.InteractionHandlers;
 using NodeEditor.Geometry;
+using NodeEditor.Nodes;
 
 namespace NodeEditor.Controls {
-  public class NodeEditorControl: Control {
+  public class NodeEditorControl : Control {
     static NodeEditorControl() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(NodeEditorControl), new FrameworkPropertyMetadata(typeof(NodeEditorControl)));
     }
 
     public NodeEditorControl() {
-      mIsDragging = false;
-
       // TODO Remove this setting
       Viewport = new View2D(100, 100, 100, 100, 1);
+
+      mCurrentHandler = new PanZoomHandler(this);
+    }
+
+    internal void MoveViewport(Point2 delta) {
+      Viewport = new View2D(Viewport.CenterX - delta.X / Viewport.Zoom,
+                            Viewport.CenterY - delta.Y / Viewport.Zoom,
+                            Viewport.Width, Viewport.Height,
+                            Viewport.Zoom);
+      UpdateGrid();
     }
 
     private Grid Root;
     private ItemsControl NodesItemsControl;
+    private ConnectionsPanel PreviewPanel;
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
       Root = Template.FindName("Root", this) as Grid;
       NodesItemsControl = Template.FindName("NodesItemsControl", this) as ItemsControl;
+      PreviewPanel = Template.FindName("PreviewPanel", this) as ConnectionsPanel;
 
       UpdateGrid();
     }
@@ -50,13 +63,26 @@ namespace NodeEditor.Controls {
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
       var PaperSize = sizeInfo.NewSize;
       Viewport = new View2D(Viewport.CenterX, Viewport.CenterY,
-                                       PaperSize.Width * Zoom, PaperSize.Height * Zoom, Zoom);
+                            PaperSize.Width * Zoom, PaperSize.Height * Zoom, Zoom);
       UpdateGrid();
 
       base.OnRenderSizeChanged(sizeInfo);
     }
 
-    #region Mouse handling
+    #region Interaction handlers
+    private IEditorInteractionHandler mCurrentHandler;
+    internal void EndInteraction() {
+      // Go back to the default handler for pan and zoom interaction
+      mCurrentHandler = new PanZoomHandler(this);
+      // Reset capture state when ending interaction
+      if (mCaptured) {
+        ReleaseMouseCapture();
+        mCaptured = false;
+      }
+      // Also clear the preview that maybe was set up by the interaction handler
+      ClearPreview();
+    }
+
     protected override void OnMouseWheel(MouseWheelEventArgs e) {
       e.Handled = true;
 
@@ -68,37 +94,51 @@ namespace NodeEditor.Controls {
       BeginAnimation(NodeEditorControl.ZoomProperty, anim, HandoffBehavior.Compose);
     }
 
-    private bool mIsDragging;
-    private Point mDragLastPoint;
+    private bool mCaptured;
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
-      if (CaptureMouse()) {
-        mIsDragging = true;
-        mDragLastPoint = e.GetPosition(this);
-        e.Handled = true;
+      var pos = e.GetPosition(this);
+      e.Handled = mOnMouseLeftButtonDown(pos);
+    }
+    private bool mOnMouseLeftButtonDown(Point pos) {
+      mCaptured = CaptureMouse();
+      if (mCaptured) {
+        var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
+        return mCurrentHandler.OnMouseButtonDown(args);
       }
+
+      return false;
     }
 
     protected override void OnMouseMove(MouseEventArgs e) {
-      if (mIsDragging) {
-        var newPoint = e.GetPosition(this);
-        var delta = newPoint - mDragLastPoint;
-        mDragLastPoint = newPoint;
-
-        Viewport = new View2D(Viewport.CenterX - delta.X / Viewport.Zoom, Viewport.CenterY - delta.Y / Viewport.Zoom,
-                                         Viewport.Width, Viewport.Height,
-                                         Viewport.Zoom);
-
-        UpdateGrid();
-        e.Handled = true;
-      }
+      var pos = e.GetPosition(this);
+      var args = new MouseEditorEventArgs(new Point2(pos.X, pos.Y));
+      e.Handled = mCurrentHandler.OnMouseMove(args);
     }
 
     protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
-      if (mIsDragging) {
-        mIsDragging = false;
+      if (mCaptured) {
+        mCaptured = false;
         ReleaseMouseCapture();
-        e.Handled = true;
+
+        var pos = e.GetPosition(this);
+        var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
+        e.Handled = mCurrentHandler.OnMouseButtonUp(args);
       }
+    }
+    #endregion
+
+    #region Preview Panel
+    internal void AddPreviewElement(UIElement previewElement) {
+      PreviewPanel.Children.Add(previewElement);
+    }
+    internal void InvalidatePreview() {
+      PreviewPanel.InvalidateArrange();
+      foreach(UIElement x in PreviewPanel.Children) {
+        x.InvalidateVisual();
+      }
+    }
+    private void ClearPreview() {
+      PreviewPanel.Children.Clear();
     }
     #endregion
 
@@ -183,5 +223,60 @@ namespace NodeEditor.Controls {
     public static readonly DependencyProperty ViewportProperty =
         DependencyProperty.Register("Viewport", typeof(View2D), typeof(NodeEditorControl), new PropertyMetadata(new View2D(0, 0, 100, 100, 1)));
     #endregion
+
+    #region "Commands"
+    public ICommand BeginConnectionCommand => new DelegateCommand((object arg) => {
+      if (mCaptured) {
+        // We're during an interaction, skip commands
+        return;
+      }
+
+      var control = arg as FrameworkElement;
+      var nodeOutput = control.DataContext as NodeOutput;
+      var node = VisualTreeUtils.GetDataContextOnParents<Node>(control);
+
+      mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
+      mOnMouseLeftButtonDown(Mouse.GetPosition(this));
+    });
+    #endregion
+  }
+
+  // Adorners must subclass the abstract base class Adorner.
+  public class SimpleCircleAdorner : Adorner {
+    // Be sure to call the base class constructor.
+    public SimpleCircleAdorner(UIElement adornedElement)
+      : base(adornedElement) {
+      b = new Button();
+      b.Width = 50;
+      b.Height = 30;
+      b.Content = new TextBlock() { Text = "Ciao!" };
+      AddVisualChild(b);
+    }
+
+    private Button b;
+
+    protected override int VisualChildrenCount => 1;
+    protected override Visual GetVisualChild(int index) {
+      return b;
+    }
+
+    // A common way to implement an adorner's rendering behavior is to override the OnRender
+    // method, which is called by the layout system as part of a rendering pass.
+    protected override void OnRender(DrawingContext drawingContext) {
+      Rect adornedElementRect = new Rect(this.AdornedElement.DesiredSize);
+
+      // Some arbitrary drawing implements.
+      SolidColorBrush renderBrush = new SolidColorBrush(Colors.Green);
+      renderBrush.Opacity = 0.2;
+      Pen renderPen = new Pen(new SolidColorBrush(Colors.Navy), 1.5);
+      double renderRadius = 5.0;
+
+      // Draw a circle at each corner.
+      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopLeft, renderRadius, renderRadius);
+      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopRight, renderRadius, renderRadius);
+      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
+      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
+      drawingContext.DrawLine(renderPen, adornedElementRect.BottomLeft, adornedElementRect.BottomRight);
+    }
   }
 }
