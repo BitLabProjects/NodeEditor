@@ -35,6 +35,20 @@ namespace NodeEditor.Controls {
                             Viewport.Zoom);
       UpdateGrid();
     }
+    internal void ZoomIn() {
+      ApplyZoomDelta(+0.1);
+    }
+    internal void ZoomOut() {
+      ApplyZoomDelta(-0.1);
+    }
+    private void ApplyZoomDelta(double delta) {
+      var newZoom = Zoom + delta;
+      newZoom = Math.Max(0.5, Math.Min(2, newZoom));
+
+      var anim = new DoubleAnimation(newZoom, new Duration(TimeSpan.FromMilliseconds(300)));
+      anim.EasingFunction = new CircleEase();
+      BeginAnimation(NodeEditorControl.ZoomProperty, anim, HandoffBehavior.Compose);
+    }
 
     private Grid Root;
     private ItemsControl NodesItemsControl;
@@ -84,14 +98,9 @@ namespace NodeEditor.Controls {
     }
 
     protected override void OnMouseWheel(MouseWheelEventArgs e) {
-      e.Handled = true;
-
-      var newZoom = Zoom + e.Delta / 1200.0;
-      newZoom = Math.Max(0.5, Math.Min(2, newZoom));
-
-      var anim = new DoubleAnimation(newZoom, new Duration(TimeSpan.FromMilliseconds(300)));
-      anim.EasingFunction = new CircleEase();
-      BeginAnimation(NodeEditorControl.ZoomProperty, anim, HandoffBehavior.Compose);
+      var pos = e.GetPosition(this);
+      var args = new MouseWheelEditorEventArgs(new Point2(pos.X, pos.Y), e.Delta);
+      e.Handled = mCurrentHandler.OnMouseWheel(args);
     }
 
     private bool mCaptured;
@@ -239,44 +248,5 @@ namespace NodeEditor.Controls {
       mOnMouseLeftButtonDown(Mouse.GetPosition(this));
     });
     #endregion
-  }
-
-  // Adorners must subclass the abstract base class Adorner.
-  public class SimpleCircleAdorner : Adorner {
-    // Be sure to call the base class constructor.
-    public SimpleCircleAdorner(UIElement adornedElement)
-      : base(adornedElement) {
-      b = new Button();
-      b.Width = 50;
-      b.Height = 30;
-      b.Content = new TextBlock() { Text = "Ciao!" };
-      AddVisualChild(b);
-    }
-
-    private Button b;
-
-    protected override int VisualChildrenCount => 1;
-    protected override Visual GetVisualChild(int index) {
-      return b;
-    }
-
-    // A common way to implement an adorner's rendering behavior is to override the OnRender
-    // method, which is called by the layout system as part of a rendering pass.
-    protected override void OnRender(DrawingContext drawingContext) {
-      Rect adornedElementRect = new Rect(this.AdornedElement.DesiredSize);
-
-      // Some arbitrary drawing implements.
-      SolidColorBrush renderBrush = new SolidColorBrush(Colors.Green);
-      renderBrush.Opacity = 0.2;
-      Pen renderPen = new Pen(new SolidColorBrush(Colors.Navy), 1.5);
-      double renderRadius = 5.0;
-
-      // Draw a circle at each corner.
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopLeft, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopRight, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
-      drawingContext.DrawLine(renderPen, adornedElementRect.BottomLeft, adornedElementRect.BottomRight);
-    }
   }
 }

@@ -21,11 +21,20 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
   }
 
+  class MouseWheelEditorEventArgs : MouseEditorEventArgs {
+    public readonly int Delta;
+    public MouseWheelEditorEventArgs(Point2 position, int delta) : base(position) {
+      this.Delta = delta;
+    }
+  }
+
   interface IEditorInteractionHandler {
     bool OnMouseButtonDown(MouseButtonEditorEventArgs args);
     bool OnMouseMove(MouseEditorEventArgs args);
     bool OnMouseButtonUp(MouseButtonEditorEventArgs args);
 
     bool OnMouseDragStart(MouseButtonEditorEventArgs args);
+
+    bool OnMouseWheel(MouseWheelEditorEventArgs args);
   }
 }

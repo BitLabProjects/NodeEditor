@@ -21,5 +21,9 @@ namespace NodeEditor.Controls.InteractionHandlers {
     public virtual bool OnMouseMove(MouseEditorEventArgs args) {
       return false;
     }
+
+    public virtual bool OnMouseWheel(MouseWheelEditorEventArgs args) {
+      return false;
+    }
   }
 }

@@ -37,5 +37,14 @@ namespace NodeEditor.Controls.InteractionHandlers {
       mIsDragging = false;
       return true;
     }
+
+    public override bool OnMouseWheel(MouseWheelEditorEventArgs args) {
+      if (args.Delta > 0) {
+        nodeEditor.ZoomIn();
+      } else {
+        nodeEditor.ZoomOut();
+      }
+      return true;
+    }
   }
 }
