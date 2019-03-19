@@ -1,4 +1,5 @@
-﻿using NodeEditor.Geometry;
+﻿using NodeEditor.App.Commands;
+using NodeEditor.Geometry;
 using NodeEditor.Nodes;
 using System;
 using System.Collections.Generic;
@@ -12,13 +13,16 @@ using System.Windows.Media;
 
 namespace NodeEditor.Controls.InteractionHandlers {
   class ConnectNodeOutputHandler : EditorInteractionHandlerBase {
-    private Point2 mDragLastPoint;
-    private ConnectionPath previewConnectionPath;
-    private Adorner mAdorner;
-
     private readonly NodeEditorControl nodeEditor;
     private readonly Node node;
     private readonly NodeOutput nodeOutput;
+
+    private Point2 mDragLastPoint;
+    private ConnectionPath previewConnectionPath;
+    private Adorner mAdorner;
+    private Node toNode;
+    private NodeInput toNodeInput;
+
     public ConnectNodeOutputHandler(NodeEditorControl nodeEditor,
                                     Node node, NodeOutput nodeOutput) {
       this.nodeEditor = nodeEditor;
@@ -40,18 +44,28 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
 
     public override bool OnMouseMove(MouseEditorEventArgs args) {
-      nodeEditor.InvalidatePreview();
 
       removeAdorner();
 
       // Find an element under the mouse with NodeInput DataContext
       var feWithNodeInputDC = VisualTreeUtils.HitTestWithDataContext<NodeInput>(nodeEditor, args.Position);
       if (feWithNodeInputDC != null) {
+        toNodeInput = feWithNodeInputDC.DataContext as NodeInput;
+        toNode = VisualTreeUtils.GetDataContextOnParents<Node>(feWithNodeInputDC);
+        previewConnectionPath.DataContext = new Connection(node, nodeOutput, toNode, toNodeInput);
+
+        // Create the adorner
         feWithNodeInputDC = VisualTreeUtils.GetLastParentWithDataContextOfType<NodeInput>(feWithNodeInputDC);
         mAdorner = new SimpleCircleAdorner(feWithNodeInputDC);
         var myAdornerLayer = AdornerLayer.GetAdornerLayer(feWithNodeInputDC);
         myAdornerLayer.Add(mAdorner);
+      } else {
+        toNode = null;
+        toNodeInput = null;
+        previewConnectionPath.DataContext = new Connection(node, nodeOutput, null, null);
       }
+
+      nodeEditor.InvalidatePreview();
 
       return true;
     }
@@ -64,6 +78,12 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
 
     public override bool OnMouseButtonUp(MouseButtonEditorEventArgs args) {
+      // Launch the command
+      if (toNode != null && toNodeInput != null) {
+        var connection = new Connection(node, nodeOutput, toNode, toNodeInput);
+        AttachedProps.GetCommandManager(nodeEditor).StartCommand(new AddConnectionCommandToken(null, connection));
+      }
+
       removeAdorner();
       nodeEditor.EndInteraction();
       return true;

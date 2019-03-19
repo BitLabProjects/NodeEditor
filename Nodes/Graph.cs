@@ -20,6 +20,9 @@ namespace NodeEditor.Nodes {
     public Graph RemoveConnection(Connection c) {
       return new Graph(Nodes, Connections.Remove(c));
     }
+    public Graph AddConnection(Connection c) {
+      return new Graph(Nodes, Connections.Add(c));
+    }
     #endregion
   }
 }

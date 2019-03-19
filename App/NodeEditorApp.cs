@@ -48,6 +48,7 @@ namespace NodeEditor.App {
 
       CommandManager = new CommandManager();
       CommandManager.RegisterCommand(typeof(RemoveConnectionCommandToken), () => new RemoveConnectionCommand(this));
+      CommandManager.RegisterCommand(typeof(AddConnectionCommandToken), () => new AddConnectionCommand(this));
     }
 
     public event PropertyChangedEventHandler PropertyChanged;

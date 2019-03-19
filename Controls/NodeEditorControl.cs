@@ -105,12 +105,19 @@ namespace NodeEditor.Controls {
     }
 
     private bool mCaptured;
+    private bool mSkipMouseMoveBecauseCapturing;
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
       var pos = e.GetPosition(this);
       e.Handled = mOnMouseLeftButtonDown(pos);
     }
     private bool mOnMouseLeftButtonDown(Point pos) {
-      mCaptured = CaptureMouse();
+      try {
+        mSkipMouseMoveBecauseCapturing = true;
+        mCaptured = CaptureMouse();
+      } finally {
+        mSkipMouseMoveBecauseCapturing = false;
+      }
+      
       if (mCaptured) {
         var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
         return mCurrentHandler.OnMouseButtonDown(args);
@@ -120,6 +127,11 @@ namespace NodeEditor.Controls {
     }
 
     protected override void OnMouseMove(MouseEventArgs e) {
+      if (mSkipMouseMoveBecauseCapturing) {
+        // Calling CaptureMouse() has been observe to raise a mouse move, don't know why.
+        return;
+      }
+
       var pos = e.GetPosition(this);
       var args = new MouseEditorEventArgs(new Point2(pos.X, pos.Y));
       e.Handled = mCurrentHandler.OnMouseMove(args);
@@ -129,11 +141,11 @@ namespace NodeEditor.Controls {
       if (mCaptured) {
         mCaptured = false;
         ReleaseMouseCapture();
-
-        var pos = e.GetPosition(this);
-        var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
-        e.Handled = mCurrentHandler.OnMouseButtonUp(args);
       }
+
+      var pos = e.GetPosition(this);
+      var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
+      e.Handled = mCurrentHandler.OnMouseButtonUp(args);
     }
     #endregion
 
