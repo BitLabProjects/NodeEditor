@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using NodeEditor.App.Commands;
 using NodeEditor.Controls.InteractionHandlers;
 using NodeEditor.Geometry;
 using NodeEditor.Nodes;
@@ -233,7 +234,7 @@ namespace NodeEditor.Controls {
         DependencyProperty.Register("Viewport", typeof(View2D), typeof(NodeEditorControl), new PropertyMetadata(new View2D(0, 0, 100, 100, 1)));
     #endregion
 
-    #region "Commands"
+    #region Commands
     public ICommand BeginConnectionCommand => new DelegateCommand((object arg) => {
       if (mCaptured) {
         // We're during an interaction, skip commands
@@ -243,9 +244,17 @@ namespace NodeEditor.Controls {
       var control = arg as FrameworkElement;
       var nodeOutput = control.DataContext as NodeOutput;
       var node = VisualTreeUtils.GetDataContextOnParents<Node>(control);
+      if (nodeOutput == null || node == null) {
+        // Could not determine context
+        return;
+      }
 
       mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
       mOnMouseLeftButtonDown(Mouse.GetPosition(this));
+    });
+    public ICommand RemoveConnectionCommand => new DelegateCommand((object arg) => {
+      var connection = arg as Connection;
+      AttachedProps.GetCommandManager(this).StartCommand(new RemoveConnectionCommandToken(null, connection));
     });
     #endregion
   }

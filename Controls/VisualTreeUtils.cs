@@ -1,4 +1,5 @@
-﻿using NodeEditor.Geometry;
+﻿using NodeEditor.App.Commands;
+using NodeEditor.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,5 +93,18 @@ namespace NodeEditor.Controls {
 
       return result;
     }
+  }
+
+  class AttachedProps {
+    #region CommandManager
+    public static ICommandManager GetCommandManager(DependencyObject obj) {
+      return (ICommandManager)obj.GetValue(CommandManagerProperty);
+    }
+    public static void SetCommandManager(DependencyObject obj, ICommandManager value) {
+      obj.SetValue(CommandManagerProperty, value);
+    }
+    public static readonly DependencyProperty CommandManagerProperty =
+        DependencyProperty.RegisterAttached("CommandManager", typeof(ICommandManager), typeof(AttachedProps), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
+    #endregion
   }
 }

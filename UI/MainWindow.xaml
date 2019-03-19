@@ -7,8 +7,8 @@
         xmlns:controls="clr-namespace:NodeEditor.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-  <Grid>
-    <controls:NodeEditorControl Nodes="{Binding Nodes}" Connections="{Binding Connections}">
+  <Grid controls:AttachedProps.CommandManager="{Binding CommandManager}">
+    <controls:NodeEditorControl Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
       <controls:NodeEditorControl.NodeContainerStyle>
         <Style>
           <Setter Property="controls:CartesianPanel.X" Value="{Binding Position.X}" />
@@ -87,7 +87,7 @@
       </controls:NodeEditorControl.ConnectionContainerStyle>
       <controls:NodeEditorControl.ConnectionTemplate>
         <DataTemplate>
-          <controls:ConnectionPath DoubleClickCommand="{Binding RemoveConnectionCommand, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+          <controls:ConnectionPath DoubleClickCommand="{Binding RemoveConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
             <controls:ConnectionPath.Effect>
               <DropShadowEffect ShadowDepth="2" Color="#000" />
             </controls:ConnectionPath.Effect>

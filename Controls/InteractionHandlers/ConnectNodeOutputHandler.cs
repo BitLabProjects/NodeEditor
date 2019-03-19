@@ -42,10 +42,7 @@ namespace NodeEditor.Controls.InteractionHandlers {
     public override bool OnMouseMove(MouseEditorEventArgs args) {
       nodeEditor.InvalidatePreview();
 
-      if (mAdorner != null) {
-        AdornerLayer.GetAdornerLayer(mAdorner).Remove(mAdorner);
-        mAdorner = null;
-      }
+      removeAdorner();
 
       // Find an element under the mouse with NodeInput DataContext
       var feWithNodeInputDC = VisualTreeUtils.HitTestWithDataContext<NodeInput>(nodeEditor, args.Position);
@@ -59,7 +56,15 @@ namespace NodeEditor.Controls.InteractionHandlers {
       return true;
     }
 
+    private void removeAdorner() {
+      if (mAdorner != null) {
+        AdornerLayer.GetAdornerLayer(mAdorner).Remove(mAdorner);
+        mAdorner = null;
+      }
+    }
+
     public override bool OnMouseButtonUp(MouseButtonEditorEventArgs args) {
+      removeAdorner();
       nodeEditor.EndInteraction();
       return true;
     }
