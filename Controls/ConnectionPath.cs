@@ -9,8 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace NodeEditor.Controls
-{
+namespace NodeEditor.Controls {
 
   class ConnectionPath : FrameworkElement {
     public ConnectionPath() {
@@ -114,31 +113,44 @@ namespace NodeEditor.Controls
       var dx = (layoutInfo.toPoint.X - layoutInfo.fromPoint.X) / parentPanel.Zoom;
       var dy = (layoutInfo.toPoint.Y - layoutInfo.fromPoint.Y) / parentPanel.Zoom;
 
+      const float margin = 10;
+
+      Point[] points;
+      if (dx < 0) {
+        // This is a connection from right to left
+        points = new Point[] { new Point(margin, 0),
+                               new Point(margin + margin / 2,      margin / 2),
+                               new Point(margin + margin / 2, 80 - margin / 2),
+                               new Point(             margin,              80),
+                               new Point(        dx - margin,              80),
+                               new Point(dx - margin - margin / 2, 80 - margin / 2),
+                               new Point(dx - margin - margin / 2, dy + margin / 2),
+                               new Point(             dx - margin,              dy),
+                               new Point(                      dx,              dy) };
+      } else {
+        var height = dy;
+        var width = dx - 2 * margin;
+        if (height > width) {
+          var displacement = height - width;
+          points = new Point[] { new Point(margin, 0),
+                                 new Point(margin + width / 2, width / 2),
+                                 new Point(margin + width / 2, width / 2 + displacement),
+                                 new Point(dx - margin, dy),
+                                 new Point(dx, dy) };
+        } else {
+          var displacement = width - height;
+          points = new Point[] { new Point(margin, 0),
+                                 new Point(margin + height / 2, height / 2),
+                                 new Point(margin + height / 2 + displacement, height / 2),
+                                 new Point(dx - margin, dy),
+                                 new Point(dx, dy) };
+        }
+      }
+
       var figure = new PathFigure();
       figure.IsClosed = false;
       figure.IsFilled = false;
       figure.StartPoint = new Point(0, 0);
-
-      const float margin = 10;
-      var height = dy;
-      var width = dx - 2 * margin;
-      Point[] points;
-      if (height > width) {
-        var displacement = height - width;
-        points = new Point[] { new Point(margin, 0),
-                               new Point(margin + width / 2, width / 2),
-                               new Point(margin + width / 2, width / 2 + displacement),
-                               new Point(dx - margin, dy),
-                               new Point(dx, dy) };
-      } else {
-        var displacement = width - height;
-        points = new Point[] { new Point(margin, 0),
-                               new Point(margin + height / 2, height / 2),
-                               new Point(margin + height / 2 + displacement, height / 2),
-                               new Point(dx - margin, dy),
-                               new Point(dx, dy) };
-      }
-
       figure.Segments.Add(new PolyLineSegment(points, true));
       var geo = new PathGeometry();
       geo.Figures.Add(figure);
