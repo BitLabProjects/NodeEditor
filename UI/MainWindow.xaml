@@ -7,7 +7,8 @@
         xmlns:controls="clr-namespace:NodeEditor.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-  <Grid controls:AttachedProps.CommandManager="{Binding CommandManager}">
+  <Grid controls:AttachedProps.CommandManager="{Binding CommandManager}"
+        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Animated">
     <controls:NodeEditorControl Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
       <controls:NodeEditorControl.NodeContainerStyle>
         <Style>
@@ -29,7 +30,7 @@
 
               <!-- Title bar -->
               <Grid Grid.Row="0">
-                <TextBlock Text="Node" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4" FontFamily="Consolas" />
+                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4" FontFamily="Consolas" />
                 <Ellipse Fill="#666" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 6 0" />
               </Grid>
 
@@ -43,12 +44,45 @@
                               ItemsSource="{Binding Inputs}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                      <Grid Margin="0 4 0 0">
-                        <StackPanel Orientation="Horizontal" Margin="4 0 10 0">
-                          <Border BorderThickness="1" BorderBrush="#CC872C" Background="#FF9400" CornerRadius="2" Width="10" Height="10" VerticalAlignment="Center" />
-                          <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="4 0 0 0" />
-                        </StackPanel>
-                      </Grid>
+                      <Button ClickMode="Press" 
+                              CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+                              Command="{Binding BeginConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
+                        <Button.Template>
+                          <ControlTemplate TargetType="Button">
+                            <Grid Margin="0 4 6 0" HorizontalAlignment="Left">
+                              <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                  <VisualState Name="Normal">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                  </VisualState>
+                                  <VisualState Name="MouseOver">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="1" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                  </VisualState>
+                                  <VisualState Name="Pressed">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="0.6" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                  </VisualState>
+                                </VisualStateGroup>
+                              </VisualStateManager.VisualStateGroups>
+                              <Border x:Name="Background" Background="SkyBlue" Opacity="0" />
+                              
+                              <StackPanel Orientation="Horizontal" Margin="4 0 4 0">
+                                <Border BorderThickness="1" BorderBrush="#CC872C" Background="#FF9400" CornerRadius="2" Width="10" Height="10" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="4 0 0 0" />
+                              </StackPanel>
+
+                            </Grid>
+                          </ControlTemplate>
+                        </Button.Template>
+                      </Button>
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -57,12 +91,36 @@
                               ItemsSource="{Binding Outputs}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                      <Button CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+                      <Button ClickMode="Press"
+                              CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
                               Command="{Binding BeginConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
                         <Button.Template>
                           <ControlTemplate TargetType="Button">
-                            <Grid Margin="0 4 0 0">
-                              <StackPanel Orientation="Horizontal" Margin="10 0 4 0">
+                            <Grid Margin="6 4 0 0" HorizontalAlignment="Right">
+                              <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                  <VisualState Name="Normal">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="0" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                  </VisualState>
+                                  <VisualState Name="MouseOver">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="1" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                  </VisualState>
+                                  <VisualState Name="Pressed">
+                                    <Storyboard>
+                                      <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
+                                                       To="0.6" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                  </VisualState>
+                                </VisualStateGroup>
+                              </VisualStateManager.VisualStateGroups>
+                              <Border x:Name="Background" Background="SkyBlue" Opacity="0" />
+                              <StackPanel Orientation="Horizontal" Margin="4 0 4 0">
                                 <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="0 0 4 0" />
                                 <Border BorderThickness="1" BorderBrush="#1FA0D3" Background="#00B6FF" CornerRadius="2" Width="10" Height="10" VerticalAlignment="Center" />
                               </StackPanel>

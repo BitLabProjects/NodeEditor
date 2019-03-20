@@ -86,6 +86,7 @@ namespace NodeEditor.Controls {
 
     #region Interaction handlers
     private IEditorInteractionHandler mCurrentHandler;
+    private bool CurrentHandlerIsPanZoom => mCurrentHandler.GetType() == typeof(PanZoomHandler);
     internal void EndInteraction() {
       // Go back to the default handler for pan and zoom interaction
       mCurrentHandler = new PanZoomHandler(this);
@@ -248,7 +249,7 @@ namespace NodeEditor.Controls {
 
     #region Commands
     public ICommand BeginConnectionCommand => new DelegateCommand((object arg) => {
-      if (mCaptured) {
+      if (mCaptured || !CurrentHandlerIsPanZoom) {
         // We're during an interaction, skip commands
         return;
       }

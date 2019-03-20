@@ -1,0 +1,22 @@
+# @runtime noflo-browser
+# @icon trash
+
+INPORT=Write.DB:DB
+INPORT=Store.IN:STORE
+INPORT=EnsureId.IN:ITEM
+OUTPORT=Delete.KEY:KEY
+OUTPORT=Errors.OUT:ERROR
+
+'readwrite' -> STRING HoldMode(strings/SendString)
+Store(core/Repeat) OUT -> IN HoldMode
+HoldMode OUT -> MODE Write(indexeddb/BeginTransaction)
+Store OUT -> STORES Write
+Store OUT -> NAME GetStore(indexeddb/GetStore)
+Write TRANSACTION -> TRANSACTION GetStore
+GetStore STORE -> STORE Delete(indexeddb/Delete)
+EnsureId(ui/EnsureId) ID -> KEY Delete
+
+# Error handling
+Write ERROR -> IN Errors(core/Merge)
+GetStore ERROR -> IN Errors
+Delete ERROR -> IN Errors

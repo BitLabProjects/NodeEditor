@@ -17,6 +17,7 @@ namespace NodeEditor.Controls.InteractionHandlers {
     private readonly Node node;
     private readonly NodeOutput nodeOutput;
 
+    private DateTime mMouseDownTime;
     private Point2 mDragLastPoint;
     private ConnectionPath previewConnectionPath;
     private Adorner mAdorner;
@@ -31,14 +32,21 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
 
     public override bool OnMouseButtonDown(MouseButtonEditorEventArgs args) {
+      if (previewConnectionPath != null) {
+        // It's the confirm click, skip this event
+        return true;
+      }
+
       mDragLastPoint = args.Position;
 
       previewConnectionPath = new ConnectionPath();
       //previewContainer.ContentTemplate = ConnectionTemplate;
       previewConnectionPath.DataContext = new Connection(node, nodeOutput, null, null);
-      previewConnectionPath.Brush = Brushes.CadetBlue;
+      previewConnectionPath.Brush = Brushes.SkyBlue;
 
       nodeEditor.AddPreviewElement(previewConnectionPath);
+
+      mMouseDownTime = DateTime.Now;
 
       return true;
     }
@@ -78,6 +86,11 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
 
     public override bool OnMouseButtonUp(MouseButtonEditorEventArgs args) {
+      if (DateTime.Now.Subtract(mMouseDownTime).TotalSeconds < 1) {
+        // The first interaction was a click, don't confirm immediately to support the drag
+        return true;
+      }
+
       // Launch the command
       if (toNode != null && toNodeInput != null) {
         var connection = new Connection(node, nodeOutput, toNode, toNodeInput);
@@ -95,14 +108,38 @@ namespace NodeEditor.Controls.InteractionHandlers {
     // Be sure to call the base class constructor.
     public SimpleCircleAdorner(UIElement adornedElement)
       : base(adornedElement) {
-      b = new Button();
-      b.Width = 50;
-      b.Height = 30;
-      b.Content = new TextBlock() { Text = "Ciao!" };
+      b = new Border();
+      //b.BorderBrush = Brushes.DarkSlateBlue;
+      b.Background = Brushes.SkyBlue;
+      b.BorderThickness = new Thickness(0);
+      //b.CornerRadius = new CornerRadius(2);
+      //b.Opacity = 0.6;
+      b.Child = new TextBlock() {
+        Text = "Connect",
+        HorizontalAlignment = HorizontalAlignment.Center,
+        VerticalAlignment = VerticalAlignment.Center,
+        Foreground = Brushes.Black,
+        Margin = new Thickness(4, 2, 4, 2),
+      };
       AddVisualChild(b);
     }
 
-    private Button b;
+    protected override Size MeasureOverride(Size constraint) {
+      b.Measure(new Size(double.PositiveInfinity, AdornedElement.DesiredSize.Height));
+
+      return base.MeasureOverride(constraint);
+    }
+
+    protected override Size ArrangeOverride(Size finalSize) {
+      b.Arrange(new Rect(this.AdornedElement.DesiredSize.Width, 
+                         this.AdornedElement.DesiredSize.Height / 2 - b.DesiredSize.Height / 2, 
+                         b.DesiredSize.Width, 
+                         b.DesiredSize.Height));
+
+      return base.ArrangeOverride(finalSize);
+    }
+
+    private Border b;
 
     protected override int VisualChildrenCount => 1;
     protected override Visual GetVisualChild(int index) {
@@ -114,18 +151,11 @@ namespace NodeEditor.Controls.InteractionHandlers {
     protected override void OnRender(DrawingContext drawingContext) {
       Rect adornedElementRect = new Rect(this.AdornedElement.DesiredSize);
 
-      // Some arbitrary drawing implements.
-      SolidColorBrush renderBrush = new SolidColorBrush(Colors.Green);
-      renderBrush.Opacity = 0.2;
-      Pen renderPen = new Pen(new SolidColorBrush(Colors.Navy), 1.5);
-      double renderRadius = 5.0;
+      Pen renderPen = new Pen(new SolidColorBrush(Colors.SkyBlue), 1.5);
 
-      // Draw a circle at each corner.
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopLeft, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.TopRight, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomLeft, renderRadius, renderRadius);
-      //drawingContext.DrawEllipse(renderBrush, renderPen, adornedElementRect.BottomRight, renderRadius, renderRadius);
-      drawingContext.DrawLine(renderPen, adornedElementRect.BottomLeft, adornedElementRect.BottomRight);
+      drawingContext.DrawLine(renderPen, 
+                              adornedElementRect.BottomLeft + new Vector(3, 0), 
+                              adornedElementRect.BottomRight + new Vector(b.ActualWidth, 0));
     }
   }
 }

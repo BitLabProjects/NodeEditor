@@ -73,6 +73,7 @@
     <Compile Include="Controls\InteractionHandlers\PanZoomHandler.cs" />
     <Compile Include="Controls\NodeEditorControl.cs" />
     <Compile Include="Controls\VisualTreeUtils.cs" />
+    <Compile Include="Fbp\FbpParser.cs" />
     <Compile Include="Geometry\View2D.cs" />
     <Compile Include="Geometry\Point2.cs" />
     <Compile Include="Nodes\Connection.cs" />
