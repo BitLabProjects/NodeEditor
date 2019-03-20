@@ -64,10 +64,12 @@ namespace NodeEditor.App {
                                                              select new NodeInput(x));
         var outputs = ImmutableList<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
                                                                select new NodeOutput(x));
-        var node = new Node(component.Name,
-                            new Point2(i * 200, i * 50),
-                            inputs,
-                            outputs);
+
+        var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
+                             Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));
+
+        var node = new Node(component.Name, pos,
+                            inputs, outputs);
         nodes = nodes.Add(node);
       }
 

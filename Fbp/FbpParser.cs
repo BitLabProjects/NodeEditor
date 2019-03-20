@@ -16,12 +16,14 @@ namespace NodeEditor.Fbp {
   public class Component {
     public readonly string Name;
     public readonly string Type;
+    public readonly ImmutableDictionary<string, string> Metadata;
     public ImmutableList<string> InputPorts;
     public ImmutableList<string> OutputPorts;
     public ImmutableList<Tuple<string, Component, string>> OutputPortConnections;
-    public Component(string name, string type) {
+    public Component(string name, string type, ImmutableDictionary<string, string> metadata) {
       this.Name = name;
       this.Type = type;
+      this.Metadata = metadata;
       InputPorts = ImmutableList<string>.Empty;
       OutputPorts = ImmutableList<string>.Empty;
       OutputPortConnections = ImmutableList<Tuple<string, Component, string>>.Empty;
@@ -51,11 +53,13 @@ namespace NodeEditor.Fbp {
   public static class FbpParser {
     const string COMMENT = @"^#.*$";
     const string COMPONENT_DECLARATION = @"^[A-Za-z]+(\w|\(|\)|_)*\.[A-Za-z]+(\w|\(|\)|_)*$";
-    const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(/[a-zA-Z]+)?)\)$";
+    //const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(/[a-zA-Z]+)?)\)$";
+    const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(?:/[a-zA-Z]+)?)(?::([a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)$";
     const string PORT_AND_COMPONENT = @"^(\w+) (\w+)$";
-    const string PORT_AND_COMPONENT_WITH_TYPE = @"^(\w+) (\w+\([a-zA-Z]+(/[a-zA-Z]+)?\))$";
+    const string PORT_AND_COMPONENT_WITH_TYPE = @"^(\w+) (\w+\([a-zA-Z]+(/[a-zA-Z]+)?(:([a-zA-Z]+=[a-zA-Z0-9\.]+)(,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\))$";
     const string COMPONENT_AND_PORT = @"^(\w+) (\w+)$";
-    const string COMPONENT_AND_PORT_WITH_TYPE = @"^(\w+\([a-zA-Z]+(/[a-zA-Z]+)?\)) (\w+)$";
+    const string COMPONENT_AND_PORT_WITH_TYPE = @"^(\w+\([a-zA-Z]+(?:/[a-zA-Z]+)?(?::(?:[a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,(?:[a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)) (\w+)$";
+    const string COMPONENT_METADATA = @"^([a-zA-Z]+)=([a-zA-Z0-9\.]+)$";
     const string INITIAL_BOOL_DATA = @"^(true|false)$";
     const string INITIAL_STRING_DATA = @"^('|"")(.+)\1$";
     const string INITIAL_FLOAT_DATA = @"^\d+\.\d+$";
@@ -124,7 +128,7 @@ namespace NodeEditor.Fbp {
         } else if (Regex.IsMatch(senderText, COMPONENT_AND_PORT_WITH_TYPE)) {
           var match = Regex.Match(senderText, COMPONENT_AND_PORT_WITH_TYPE);
           var sender = CreateOrRetrieveComponentFromString(match.Groups[1].Value, i, components);
-          var senderPort = match.Groups[3].Value;
+          var senderPort = match.Groups[2].Value;
           sender.ConnectTo(senderPort, receiver, receiverPort);
 
         } else if (Regex.IsMatch(senderText, INITIAL_PASSED_IN_DATA)) {
@@ -160,8 +164,8 @@ namespace NodeEditor.Fbp {
       return new FbpParseResult(ImmutableList<Component>.Empty.AddRange(components.Values));
     }
 
-    static Component CreateOrRetrieveComponentFromString(string stringVersionOfComponent, 
-                                                         int sourceLineNumber, 
+    static Component CreateOrRetrieveComponentFromString(string stringVersionOfComponent,
+                                                         int sourceLineNumber,
                                                          Dictionary<string, Component> components) {
       string componentName;
       string typeName = null;
@@ -170,45 +174,29 @@ namespace NodeEditor.Fbp {
         var match = Regex.Match(stringVersionOfComponent, COMPONENT_WITH_TYPE_DECLARATION);
         componentName = match.Groups[1].Value;
         typeName = match.Groups[2].Value;
-      } else {
-        componentName = stringVersionOfComponent;
-      }
 
-      if (typeName != null) {
+        var metadata = ImmutableDictionary<string, string>.Empty;
+        for(var i=3; i<match.Groups.Count; i++) {
+          var matchMeta = Regex.Match(match.Groups[i].Value, COMPONENT_METADATA);
+          metadata = metadata.Add(matchMeta.Groups[1].Value, matchMeta.Groups[2].Value);
+        }
+
         if (components.ContainsKey(componentName)) {
           throw new ArgumentException(string.Format("Invalid input on line {0}, process '{1}' has already been declared", sourceLineNumber, componentName));
-        } else {
-          /*
-          Type resolvedType = null;
-          var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-          foreach (var assembly in assemblies) {
-            var types = assembly.GetTypes();
-            foreach (var type in types) {
-              if (type.Name.EndsWith(typeName)) {
-                resolvedType = type;
-              }
-            }
-          }
-
-          if (resolvedType == null) {
-            throw new ArgumentException(string.Format("Invalid input on line {0}, the type '{1}' declared for process '{2}' could not be found", sourceLineNumber, typeName, componentName));
-          }
-          if (!typeof(Component).IsAssignableFrom(resolvedType)) {
-            throw new ArgumentException(string.Format("Invalid input on line {0}, the type '{1}' declared for process '{2}' is not a component", sourceLineNumber, typeName, componentName));
-          }
-
-          var component = (Component)System.Activator.CreateInstance(resolvedType, new[] { componentName });
-          */
-          var component = new Component(componentName, typeName);
-          component.Setup();
-          components[componentName] = component;
         }
-      }
+        var component = new Component(componentName, typeName, metadata);
+        component.Setup();
+        components[componentName] = component;
+        return component;
 
-      if (!components.ContainsKey(componentName)) {
-        throw new ArgumentException(string.Format("Invalid input on line {0}, the process '{1}' has not been declared", sourceLineNumber, componentName));
+      } else {
+        componentName = stringVersionOfComponent;
+
+        if (!components.ContainsKey(componentName)) {
+          throw new ArgumentException(string.Format("Invalid input on line {0}, the process '{1}' has not been declared", sourceLineNumber, componentName));
+        }
+        return components[componentName];
       }
-      return components[componentName];
     }
   }
 }

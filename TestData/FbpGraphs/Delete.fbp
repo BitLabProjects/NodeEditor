@@ -7,16 +7,16 @@ INPORT=EnsureId.IN:ITEM
 OUTPORT=Delete.KEY:KEY
 OUTPORT=Errors.OUT:ERROR
 
-'readwrite' -> STRING HoldMode(strings/SendString)
-Store(core/Repeat) OUT -> IN HoldMode
-HoldMode OUT -> MODE Write(indexeddb/BeginTransaction)
+'readwrite' -> STRING HoldMode(strings/SendString:x=0,y=0)
+Store(core/Repeat:x=200,y=50) OUT -> IN HoldMode
+HoldMode OUT -> MODE Write(indexeddb/BeginTransaction:x=400,y=100)
 Store OUT -> STORES Write
-Store OUT -> NAME GetStore(indexeddb/GetStore)
+Store OUT -> NAME GetStore(indexeddb/GetStore:x=600,y=150)
 Write TRANSACTION -> TRANSACTION GetStore
-GetStore STORE -> STORE Delete(indexeddb/Delete)
-EnsureId(ui/EnsureId) ID -> KEY Delete
+GetStore STORE -> STORE Delete(indexeddb/Delete:x=800,y=200)
+EnsureId(ui/EnsureId:x=1000,y=250) ID -> KEY Delete
 
 # Error handling
-Write ERROR -> IN Errors(core/Merge)
+Write ERROR -> IN Errors(core/Merge:x=1200,y=300)
 GetStore ERROR -> IN Errors
 Delete ERROR -> IN Errors
