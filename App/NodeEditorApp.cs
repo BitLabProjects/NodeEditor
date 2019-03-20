@@ -14,16 +14,16 @@ namespace NodeEditor.App {
     public Graph Graph { get; private set; }
     public CommandManager CommandManager { get; }
     public NodeEditorApp() {
-      var node1 = new Node("Node 1", new Point2(250, -80),
+      var node1 = new Node("Node 1", "type", new Point2(250, -80),
                            ImmutableList<NodeInput>.Empty,
                            ImmutableList<NodeOutput>.Empty);
-      var node2 = new Node("Node 2", new Point2(200, 150),
+      var node2 = new Node("Node 2", "type", new Point2(200, 150),
                            ImmutableList<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
                            ImmutableList<NodeOutput>.Empty);
-      var node3 = new Node("Node 3", new Point2(-100, -80),
+      var node3 = new Node("Node 3", "type", new Point2(-100, -80),
                            ImmutableList<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
                            ImmutableList<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
-      var node4 = new Node("Node 4", new Point2(-50, 80),
+      var node4 = new Node("Node 4", "type", new Point2(-50, 80),
                            ImmutableList<NodeInput>.Empty,
                            ImmutableList<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
       var nodes = ImmutableList<Node>
@@ -68,8 +68,8 @@ namespace NodeEditor.App {
         var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
                              Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));
 
-        var node = new Node(component.Name, pos,
-                            inputs, outputs);
+        var node = new Node(component.Name, component.Type,
+                            pos, inputs, outputs);
         nodes = nodes.Add(node);
       }
 

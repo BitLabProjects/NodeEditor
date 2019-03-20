@@ -52,8 +52,6 @@ namespace NodeEditor.Fbp {
 
   public static class FbpParser {
     const string COMMENT = @"^#.*$";
-    const string COMPONENT_DECLARATION = @"^[A-Za-z]+(\w|\(|\)|_)*\.[A-Za-z]+(\w|\(|\)|_)*$";
-    //const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(/[a-zA-Z]+)?)\)$";
     const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(?:/[a-zA-Z]+)?)(?::([a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)$";
     const string PORT_AND_COMPONENT = @"^(\w+) (\w+)$";
     const string PORT_AND_COMPONENT_WITH_TYPE = @"^(\w+) (\w+\([a-zA-Z]+(/[a-zA-Z]+)?(:([a-zA-Z]+=[a-zA-Z0-9\.]+)(,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\))$";
@@ -94,18 +92,9 @@ namespace NodeEditor.Fbp {
         var senderText = line.Substring(0, separatorIndex).Trim();
         var receiverText = line.Substring(separatorIndex + 2).Trim();
 
-        //var receiverParts = receiverText.Split('.');
-        //if (receiverParts.Length != 2) {
-        //  throw new ArgumentException(string.Format("Invalid input on line {0}, receiver declaration is malformed: '{1}'", i, receiverText));
-        //}
-        //var receiver = CreateOrRetrieveComponentFromString(receiverParts[0].Trim(), i, scheduler);
-        //var receiverPort = receiverParts[1].Trim();
-
         Component receiver = null;
         string receiverPort = null;
-        //receiverText examples:
-        //IN HoldMode
-        //STRING HoldMode(strings/SendString)
+
         if (Regex.IsMatch(receiverText, PORT_AND_COMPONENT)) {
           var match = Regex.Match(receiverText, PORT_AND_COMPONENT);
           receiverPort = match.Groups[1].Value;

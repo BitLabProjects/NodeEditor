@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
   <Grid controls:AttachedProps.CommandManager="{Binding CommandManager}"
-        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Animated">
+        TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Auto">
     <controls:NodeEditorControl Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
       <controls:NodeEditorControl.NodeContainerStyle>
         <Style>
@@ -22,16 +22,23 @@
             <Border.Effect>
               <DropShadowEffect ShadowDepth="2" Color="#000" />
             </Border.Effect>
-            <Grid>
+            <Grid SnapsToDevicePixels="False" UseLayoutRounding="True">
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
               </Grid.RowDefinitions>
 
               <!-- Title bar -->
-              <Grid Grid.Row="0">
-                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4" FontFamily="Consolas" />
-                <Ellipse Fill="#666" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 6 0" />
+              <Grid Grid.Row="0" Margin="4">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center" Margin="0 0 6 0">
+                  <TextBlock Text="{Binding Name}" FontFamily="Consolas" />
+                  <TextBlock Text="{Binding Type}" Margin="0 1 0 0" FontSize="8" FontFamily="Consolas" Foreground="#333" />
+                </StackPanel>
+                <Ellipse Grid.Column="1" Fill="#666" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 6 0" />
               </Grid>
 
               <Grid Grid.Row="1">
