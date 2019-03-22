@@ -92,6 +92,7 @@ namespace NodeEditor.Controls {
     }
     public static readonly DependencyProperty BrushProperty =
         DependencyProperty.Register("Brush", typeof(Brush), typeof(ConnectionPath), new FrameworkPropertyMetadata((Brush)null, FrameworkPropertyMetadataOptions.AffectsRender));
+    public bool IsShadow { get; set; }
     #endregion
 
     #region "Event commands"
@@ -156,16 +157,19 @@ namespace NodeEditor.Controls {
       geo.Figures.Add(figure);
 
       const float outlineSize = 10;
-      Pen shapeOutlinePen = new Pen(Brush, outlineSize);
-
-      Pen shapeOutlinePen2;
-      var BrushAsSolidColor = Brush as SolidColorBrush;
-      if (BrushAsSolidColor != null) {
-        shapeOutlinePen2 = new Pen(new SolidColorBrush(getMultipliedAlpha255(BrushAsSolidColor.Color)), outlineSize);
+      Pen shapeOutlinePen;
+      if (IsShadow) {
+        shapeOutlinePen = new Pen(Brush, outlineSize);
       } else {
-        shapeOutlinePen2 = shapeOutlinePen;
+        shapeOutlinePen = new Pen(getMultipliedAlpha255(Brush, 0.4f), outlineSize);
       }
+
+      Pen shapeOutlinePen2 = new Pen(getMultipliedAlpha255(Brush, 1.5f), outlineSize);
       drawingContext.DrawGeometry(null, shapeOutlinePen, geo);
+      if (!IsShadow) {
+        Pen shapeInlinePen = new Pen(Brush, outlineSize - 2);
+        drawingContext.DrawGeometry(null, shapeInlinePen, geo);
+      }
       if (connection.FromNode != null) {
         drawingContext.DrawLine(shapeOutlinePen2, new Point(-margin, -2), new Point(0, -2));
       }
@@ -174,8 +178,17 @@ namespace NodeEditor.Controls {
       }
     }
 
-    private Color getMultipliedAlpha255(Color input) {
-      var result = Color.Multiply(input, 1.5f);
+    private Brush getMultipliedAlpha255(Brush input, float multiplier) {
+      var BrushAsSolidColor = Brush as SolidColorBrush;
+      if (BrushAsSolidColor != null) {
+        return new SolidColorBrush(getMultipliedAlpha255(BrushAsSolidColor.Color, multiplier));
+      } else {
+        return input;
+      }
+    }
+
+    private Color getMultipliedAlpha255(Color input, float multiplier) {
+      var result = Color.Multiply(input, multiplier);
       result.A = 255;
       return result;
     }

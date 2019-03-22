@@ -81,7 +81,7 @@ namespace NodeEditor.Controls {
             connection = null;
           }
 
-          var verticalOutputOffset = 37.0 + 20.0 * connection.FromNode.GetOutputIndex(connection.FromNodeOutput);
+          var verticalOutputOffset = 47.0 + 20.0 * connection.FromNode.GetOutputIndex(connection.FromNodeOutput);
 
           var fromNodeContainer = nodesGenerator.ContainerFromItem(connection.FromNode) as FrameworkElement;
           if (!fromNodeContainer.IsArrangeValid) {
@@ -108,7 +108,7 @@ namespace NodeEditor.Controls {
             //toNodeSize = new Size(toNodeSize.Width * zoom,
             //                      toNodeSize.Height * zoom);
 
-            verticalInputOffset = 37.0 + 20.0 * connection.ToNode.GetInputIndex(connection.ToNodeInput);
+            verticalInputOffset = 47.0 + 20.0 * connection.ToNode.GetInputIndex(connection.ToNodeInput);
 
           } else {
             //toNodeOrigin = NodeEditorControl.previewMousePosition;
