@@ -51,6 +51,7 @@ namespace NodeEditor.App {
       CommandManager = new CommandManager();
       CommandManager.RegisterCommand(typeof(RemoveConnectionCommandToken), () => new RemoveConnectionCommand(this));
       CommandManager.RegisterCommand(typeof(AddConnectionCommandToken), () => new AddConnectionCommand(this));
+      CommandManager.RegisterCommand(typeof(MoveNodeCommandToken), () => new MoveNodeCommand(this));
     }
 
     private Graph mParseFbpFile(string fbpFullFileName) {

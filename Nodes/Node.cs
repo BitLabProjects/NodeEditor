@@ -28,5 +28,11 @@ namespace NodeEditor.Nodes {
     public Int32 GetOutputIndex(NodeOutput output) {
       return Outputs.IndexOf(output);
     }
+
+    #region Manipulation
+    public Node Move(Point2 newPosition) {
+      return new Node(Name, Type, newPosition, Inputs, Outputs);
+    }
+    #endregion
   }
 }

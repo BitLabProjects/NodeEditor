@@ -24,5 +24,12 @@ namespace NodeEditor.Geometry {
     public static Point2 operator +(Point2 point1, Point2 point2) {
       return new Point2(point1.X + point2.X, point1.Y + point2.Y);
     }
+
+    public static Point2 operator *(Point2 point, double value) {
+      return new Point2(point.X * value, point.Y * value);
+    }
+    public static Point2 operator /(Point2 point, double value) {
+      return new Point2(point.X / value, point.Y / value);
+    }
   }
 }

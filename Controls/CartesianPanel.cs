@@ -68,6 +68,7 @@ namespace NodeEditor.Controls {
 
       var view2D = this.Viewport;
 
+      var NodeEditorControl = VisualTreeUtils.GetVisualParent<NodeEditorControl>(this);
       var itemsControl = ItemsControl.GetItemsOwner(this) as ItemsControl;
       var generator = itemsControl.ItemContainerGenerator;
 
@@ -78,7 +79,9 @@ namespace NodeEditor.Controls {
         child.Measure(childConstraint);
 
         var node = generator.ItemFromContainer(child) as Node;
-        var pointPCS = view2D.TransformCCSToPCS(new Point2(GetX(child), GetY(child)));
+        //var positionCCS = new Point2(GetX(child), GetY(child));
+        var positionCCS = NodeEditorControl.GetNodePositionMaybePreview(node);
+        var pointPCS = view2D.TransformCCSToPCS(positionCCS);
         mNodeSizeInfos[node] = new Rect(pointPCS.X, pointPCS.Y, child.DesiredSize.Width, child.DesiredSize.Height);
       }
 

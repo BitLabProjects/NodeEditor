@@ -27,6 +27,7 @@ namespace NodeEditor.Controls {
       Viewport = new View2D(100, 100, 100, 100, 1);
 
       mCurrentHandler = new PanZoomHandler(this);
+      mNodeDragPreviews = new Dictionary<Node, Point2>();
     }
 
     internal void MoveViewport(Point2 delta) {
@@ -36,6 +37,7 @@ namespace NodeEditor.Controls {
                             Viewport.Zoom);
       UpdateGrid();
     }
+
     internal void ZoomIn() {
       ApplyZoomDelta(+0.1);
     }
@@ -53,12 +55,14 @@ namespace NodeEditor.Controls {
 
     private Grid Root;
     private ItemsControl NodesItemsControl;
+    private ItemsControl ConnectionsItemsControl;
     private ConnectionsPanel PreviewPanel;
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
       Root = Template.FindName("Root", this) as Grid;
       NodesItemsControl = Template.FindName("NodesItemsControl", this) as ItemsControl;
+      ConnectionsItemsControl = Template.FindName("ConnectionsItemsControl", this) as ItemsControl;
       PreviewPanel = Template.FindName("PreviewPanel", this) as ConnectionsPanel;
 
       UpdateGrid();
@@ -66,14 +70,12 @@ namespace NodeEditor.Controls {
     internal ItemsControl GetNodesItemsControl() {
       return NodesItemsControl;
     }
-    internal CartesianPanel GetNodesCartesianPanel() {
-      if (NodesItemsControl == null) {
-        return null;
-      }
-      return typeof(ItemsControl).InvokeMember("ItemsHost",
-                                               BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.Instance,
-                                               null, NodesItemsControl, null) as CartesianPanel;
+    #region Panels
+    private void InvalidateNodesAndConnectionsPanels() {
+      VisualTreeUtils.GetItemsHost(NodesItemsControl).InvalidateMeasure();
+      VisualTreeUtils.GetItemsHost(ConnectionsItemsControl).InvalidateMeasure();
     }
+    #endregion
 
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) {
       var PaperSize = sizeInfo.NewSize;
@@ -87,6 +89,9 @@ namespace NodeEditor.Controls {
     #region Interaction handlers
     private IEditorInteractionHandler mCurrentHandler;
     private bool CurrentHandlerIsPanZoom => mCurrentHandler.GetType() == typeof(PanZoomHandler);
+    internal void BeginInteraction(IEditorInteractionHandler newHandler) {
+      mCurrentHandler = newHandler;
+    }
     internal void EndInteraction() {
       // Go back to the default handler for pan and zoom interaction
       mCurrentHandler = new PanZoomHandler(this);
@@ -97,6 +102,8 @@ namespace NodeEditor.Controls {
       }
       // Also clear the preview that maybe was set up by the interaction handler
       ClearPreview();
+      mNodeDragPreviews.Clear();
+      InvalidateNodesAndConnectionsPanels();
     }
 
     protected override void OnMouseWheel(MouseWheelEventArgs e) {
@@ -162,6 +169,21 @@ namespace NodeEditor.Controls {
     }
     private void ClearPreview() {
       PreviewPanel.Children.Clear();
+    }
+    #endregion
+    #region Preview node positions
+    private Dictionary<Node, Point2> mNodeDragPreviews;
+    internal Point2 GetNodePositionMaybePreview(Node node) {
+      Point2 currentPreview;
+      if (mNodeDragPreviews.TryGetValue(node, out currentPreview)) {
+        return currentPreview;
+      } else {
+        return node.Position;
+      }
+    }
+    internal void NodeDragPreview(Node node, Point2 newPosition) {
+      mNodeDragPreviews[node] = newPosition;
+      InvalidateNodesAndConnectionsPanels();
     }
     #endregion
 

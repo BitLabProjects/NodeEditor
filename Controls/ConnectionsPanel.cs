@@ -45,13 +45,13 @@ namespace NodeEditor.Controls {
     }
 
     protected override Size ArrangeOverride(Size finalSize) {
-      var NodeEditorControl = GetVisualParent<NodeEditorControl>(this);
+      var NodeEditorControl = VisualTreeUtils.GetVisualParent<NodeEditorControl>(this);
 
       ItemsControl nodesItemsControl = null;
       CartesianPanel nodesCartesianPanel = null;
       if (NodeEditorControl != null) {
         nodesItemsControl = NodeEditorControl.GetNodesItemsControl();
-        nodesCartesianPanel = NodeEditorControl.GetNodesCartesianPanel();
+        nodesCartesianPanel = VisualTreeUtils.GetItemsHost(nodesItemsControl) as CartesianPanel;
       }
 
       if (nodesItemsControl == null) {
@@ -123,11 +123,9 @@ namespace NodeEditor.Controls {
 
           mLayoutInfo[connection] = new ConnectionPathLayoutInfo() { fromPoint = fromPoint, toPoint = toPoint };
 
-          //var childSize = new Size(toPoint.X - fromPoint.X,
-          //                         toPoint.Y - fromPoint.Y);
-
-          //childSize = new Size(childSize.Width / zoom,
-          //                     childSize.Height / zoom);
+          // We're making an assumption on the visual tree here.
+          // Invalidate the visual of the descendant, assuming it's a ConnectionPath which needs to do so
+          (VisualTreeHelper.GetChild((child as ContentPresenter), 0) as UIElement).InvalidateVisual();
 
           child.RenderTransform = new ScaleTransform(zoom, zoom);
           //child.Arrange(new Rect(fromPoint, childSize));
@@ -136,19 +134,6 @@ namespace NodeEditor.Controls {
       }
 
       return finalSize;
-    }
-
-    private T GetVisualParent<T>(DependencyObject visual) where T : class {
-      var curr = visual;
-      while (curr != null) {
-        var parent = VisualTreeHelper.GetParent(curr);
-        var parentAsT = parent as T;
-        if (parentAsT != null) {
-          return parentAsT;
-        }
-        curr = parent;
-      }
-      return null;
     }
   }
 }

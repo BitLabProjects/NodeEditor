@@ -1,9 +1,12 @@
-﻿using NodeEditor.Geometry;
+﻿using NodeEditor.App.Commands;
+using NodeEditor.Geometry;
+using NodeEditor.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace NodeEditor.Controls.InteractionHandlers {
   class PanZoomHandler: EditorInteractionHandlerBase {
@@ -18,6 +21,13 @@ namespace NodeEditor.Controls.InteractionHandlers {
     public override bool OnMouseButtonDown(MouseButtonEditorEventArgs args) {
       mIsDragging = true;
       mDragLastPoint = args.Position;
+
+      var mNodeFEToDrag = VisualTreeUtils.HitTestWithDataContext<Node>(nodeEditor, args.Position);
+      if (mNodeFEToDrag != null) {
+        var node = (Node)mNodeFEToDrag.DataContext;
+        nodeEditor.BeginInteraction(new MoveNodeHandler(nodeEditor, node, mDragLastPoint));
+      }
+
       return true;
     }
 

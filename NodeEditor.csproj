@@ -59,6 +59,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="App\Commands\MoveNodeCommand.cs" />
     <Compile Include="App\Commands\CommandManager.cs" />
     <Compile Include="App\Commands\AddConnectionCommand.cs" />
     <Compile Include="App\Commands\RemoveConnectionCommand.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Controls\InteractionHandlers\ConnectNodeOutputHandler.cs" />
     <Compile Include="Controls\InteractionHandlers\EditorInteractionHandlerBase.cs" />
     <Compile Include="Controls\InteractionHandlers\IEditorInteractionHandler.cs" />
+    <Compile Include="Controls\InteractionHandlers\MoveNodeHandler.cs" />
     <Compile Include="Controls\InteractionHandlers\PanZoomHandler.cs" />
     <Compile Include="Controls\NodeEditorControl.cs" />
     <Compile Include="Controls\VisualTreeUtils.cs" />

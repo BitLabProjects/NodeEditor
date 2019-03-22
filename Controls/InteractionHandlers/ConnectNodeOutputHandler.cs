@@ -23,12 +23,14 @@ namespace NodeEditor.Controls.InteractionHandlers {
     private Adorner mAdorner;
     private Node toNode;
     private NodeInput toNodeInput;
+    private bool firstClick;
 
     public ConnectNodeOutputHandler(NodeEditorControl nodeEditor,
                                     Node node, NodeOutput nodeOutput) {
       this.nodeEditor = nodeEditor;
       this.node = node;
       this.nodeOutput = nodeOutput;
+      firstClick = true;
     }
 
     public override bool OnMouseButtonDown(MouseButtonEditorEventArgs args) {
@@ -86,9 +88,14 @@ namespace NodeEditor.Controls.InteractionHandlers {
     }
 
     public override bool OnMouseButtonUp(MouseButtonEditorEventArgs args) {
+      var wasFirstClick = firstClick;
+      firstClick = false;
+
       if (DateTime.Now.Subtract(mMouseDownTime).TotalSeconds < 1) {
-        // The first interaction was a click, don't confirm immediately to support the drag
-        return true;
+        // It's a click, if it's the first click do not confirm.
+        if (wasFirstClick) {
+          return true;
+        }
       }
 
       // Launch the command

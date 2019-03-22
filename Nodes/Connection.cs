@@ -20,5 +20,17 @@ namespace NodeEditor.Nodes {
       this.ToNode = toNode;
       this.ToNodeInput = toNodeInput;
     }
+
+    public Connection ReplaceNode(Node oldN, Node newN) {
+      var fromIsOld = (FromNode == oldN);
+      var toIsOld = (ToNode == oldN);
+      if (fromIsOld || toIsOld) {
+        // TODO Verify also connections: the node is not the same so they must be checked
+        return new Connection(fromIsOld ? newN : FromNode, FromNodeOutput,
+                              toIsOld ? newN : ToNode, ToNodeInput);
+      } else {
+        return this;
+      }
+    }
   }
 }

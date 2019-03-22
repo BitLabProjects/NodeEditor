@@ -3,9 +3,11 @@ using NodeEditor.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace NodeEditor.Controls {
@@ -92,6 +94,25 @@ namespace NodeEditor.Controls {
       VisualTreeHelper.HitTest(reference, filterCallback, resultCallback, new PointHitTestParameters(new Point(point.X, point.Y)));
 
       return result;
+    }
+
+    public static T GetVisualParent<T>(DependencyObject visual) where T : class {
+      var curr = visual;
+      while (curr != null) {
+        var parent = VisualTreeHelper.GetParent(curr);
+        var parentAsT = parent as T;
+        if (parentAsT != null) {
+          return parentAsT;
+        }
+        curr = parent;
+      }
+      return null;
+    }
+
+    public static Panel GetItemsHost(ItemsControl itemsControl) {
+      return typeof(ItemsControl).InvokeMember("ItemsHost",
+                                               BindingFlags.NonPublic | BindingFlags.GetProperty | BindingFlags.Instance,
+                                               null, itemsControl, null) as Panel;
     }
   }
 

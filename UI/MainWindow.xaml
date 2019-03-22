@@ -54,12 +54,12 @@
                   </Grid.ColumnDefinitions>
                   <!-- Inputs -->
                   <ItemsControl Grid.Column="0" Margin="0 0 0 4"
-                              ItemsSource="{Binding Inputs}">
+                                ItemsSource="{Binding Inputs}">
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
                         <Button ClickMode="Press" 
-                              CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
-                              Command="{Binding BeginConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
+                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+                                Command="{Binding BeginConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
                           <Button.Template>
                             <ControlTemplate TargetType="Button">
                               <Grid Margin="0 4 6 0" HorizontalAlignment="Left">
@@ -159,38 +159,30 @@
       </controls:NodeEditorControl.ConnectionContainerStyle>
       <controls:NodeEditorControl.ConnectionTemplate>
         <DataTemplate>
-          <Grid>
-            <controls:ConnectionPath Brush="#6000" IsShadow="True" IsHitTestVisible="False">
-              <controls:ConnectionPath.RenderTransform>
-                <TranslateTransform X="2" Y="2" />
-              </controls:ConnectionPath.RenderTransform>
-            </controls:ConnectionPath>
-
-            <controls:ConnectionPath DoubleClickCommand="{Binding RemoveConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
-              <controls:ConnectionPath.Brush>
-                <SolidColorBrush x:Name="brush" Color="#888"/>
-              </controls:ConnectionPath.Brush>
-              <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup Name="CommonStates">
-                  <VisualState Name="Normal">
-                    <Storyboard>
-                      <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#888" Duration="0:0:0.15" />
-                    </Storyboard>
-                  </VisualState>
-                  <VisualState Name="MouseOver">
-                    <Storyboard>
-                      <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#64C864" Duration="0:0:0.15" />
-                    </Storyboard>
-                  </VisualState>
-                  <VisualState Name="Drag">
-                    <Storyboard>
-                      <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#44A844" Duration="0:0:0.15" />
-                    </Storyboard>
-                  </VisualState>
-                </VisualStateGroup>
-              </VisualStateManager.VisualStateGroups>
-            </controls:ConnectionPath>
-          </Grid>
+          <controls:ConnectionPath DoubleClickCommand="{Binding RemoveConnectionCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
+            <controls:ConnectionPath.Brush>
+              <SolidColorBrush x:Name="brush" Color="#888"/>
+            </controls:ConnectionPath.Brush>
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup Name="CommonStates">
+                <VisualState Name="Normal">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#888" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState Name="MouseOver">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#64C864" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState Name="Drag">
+                  <Storyboard>
+                    <ColorAnimation Storyboard.TargetName="brush" Storyboard.TargetProperty="Color" To="#44A844" Duration="0:0:0.15" />
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </controls:ConnectionPath>
         </DataTemplate>
       </controls:NodeEditorControl.ConnectionTemplate>
     </controls:NodeEditorControl>
