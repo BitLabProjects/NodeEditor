@@ -30,17 +30,17 @@ namespace NodeEditor.App {
 
     private void mLoadTestGraph() {
       var node1 = new Node("Node 1", "type", new Point2(250, -80),
-                     ImmutableList<NodeInput>.Empty,
-                     ImmutableList<NodeOutput>.Empty);
+                           ImmutableArray<NodeInput>.Empty,
+                           ImmutableArray<NodeOutput>.Empty);
       var node2 = new Node("Node 2", "type", new Point2(200, 150),
-                           ImmutableList<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
-                           ImmutableList<NodeOutput>.Empty);
+                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
+                           ImmutableArray<NodeOutput>.Empty);
       var node3 = new Node("Node 3", "type", new Point2(-100, -80),
-                           ImmutableList<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
-                           ImmutableList<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
+                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
+                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
       var node4 = new Node("Node 4", "type", new Point2(-50, 80),
-                           ImmutableList<NodeInput>.Empty,
-                           ImmutableList<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
+                           ImmutableArray<NodeInput>.Empty,
+                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
       var nodes = ImmutableList<Node>
         .Empty
         .Add(node1)
@@ -69,10 +69,10 @@ namespace NodeEditor.App {
       var nodes = ImmutableList<Node>.Empty;
       for (var i = 0; i < result.Components.Count; i++) {
         var component = result.Components[i];
-        var inputs = ImmutableList<NodeInput>.Empty.AddRange(from x in component.InputPorts
-                                                             select new NodeInput(x));
-        var outputs = ImmutableList<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
-                                                               select new NodeOutput(x));
+        var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
+                                                              select new NodeInput(x));
+        var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
+                                                                select new NodeOutput(x));
 
         var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
                              Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));

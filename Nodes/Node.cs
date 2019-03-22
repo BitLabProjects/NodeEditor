@@ -11,10 +11,10 @@ namespace NodeEditor.Nodes {
     public string Name { get; }
     public string Type { get; }
     public Point2 Position { get; }
-    public ImmutableList<NodeInput> Inputs { get; }
-    public ImmutableList<NodeOutput> Outputs { get; }
+    public ImmutableArray<NodeInput> Inputs { get; }
+    public ImmutableArray<NodeOutput> Outputs { get; }
 
-    public Node(string name, string type, Point2 position, ImmutableList<NodeInput> inputs, ImmutableList<NodeOutput> outputs) {
+    public Node(string name, string type, Point2 position, ImmutableArray<NodeInput> inputs, ImmutableArray<NodeOutput> outputs) {
       this.Name = name;
       this.Type = type;
       this.Position = position;
