@@ -62,6 +62,7 @@
     <Compile Include="App\Commands\MoveNodeCommand.cs" />
     <Compile Include="App\Commands\CommandManager.cs" />
     <Compile Include="App\Commands\AddConnectionCommand.cs" />
+    <Compile Include="App\Commands\UndoRedoCommand.cs" />
     <Compile Include="App\Commands\RemoveConnectionCommand.cs" />
     <Compile Include="App\NodeEditorApp.cs" />
     <Compile Include="Controls\CartesianPanel.cs" />

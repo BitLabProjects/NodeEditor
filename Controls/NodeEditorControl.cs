@@ -114,24 +114,9 @@ namespace NodeEditor.Controls {
 
     private bool mCaptured;
     private bool mSkipMouseMoveBecauseCapturing;
-    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e) {
+    protected override void OnMouseDown(MouseButtonEventArgs e) {
       var pos = e.GetPosition(this);
-      e.Handled = mOnMouseLeftButtonDown(pos);
-    }
-    private bool mOnMouseLeftButtonDown(Point pos) {
-      try {
-        mSkipMouseMoveBecauseCapturing = true;
-        mCaptured = CaptureMouse();
-      } finally {
-        mSkipMouseMoveBecauseCapturing = false;
-      }
-      
-      if (mCaptured) {
-        var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
-        return mCurrentHandler.OnMouseButtonDown(args);
-      }
-
-      return false;
+      e.Handled = mOnMouseButtonDown(pos, e.ChangedButton);
     }
 
     protected override void OnMouseMove(MouseEventArgs e) {
@@ -145,15 +130,37 @@ namespace NodeEditor.Controls {
       e.Handled = mCurrentHandler.OnMouseMove(args);
     }
 
-    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
+    protected override void OnMouseUp(MouseButtonEventArgs e) {
+      var pos = e.GetPosition(this);
+      e.Handled = mOnMouseButtonUp(pos, e.ChangedButton);
+    }
+
+    private bool mOnMouseButtonDown(Point pos, MouseButton button) {
+      // Avoid capturing twice
+      if (!mCaptured) {
+        try {
+          mSkipMouseMoveBecauseCapturing = true;
+          mCaptured = CaptureMouse();
+        } finally {
+          mSkipMouseMoveBecauseCapturing = false;
+        }
+      }
+
+      if (mCaptured) {
+        var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), button);
+        return mCurrentHandler.OnMouseButtonDown(args);
+      }
+
+      return false;
+    }
+    private bool mOnMouseButtonUp(Point pos, MouseButton button) {
       if (mCaptured) {
         mCaptured = false;
         ReleaseMouseCapture();
       }
 
-      var pos = e.GetPosition(this);
-      var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), MouseButton.Left);
-      e.Handled = mCurrentHandler.OnMouseButtonUp(args);
+      var args = new MouseButtonEditorEventArgs(new Point2(pos.X, pos.Y), button);
+      return mCurrentHandler.OnMouseButtonUp(args);
     }
     #endregion
 
@@ -285,7 +292,7 @@ namespace NodeEditor.Controls {
       }
 
       mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
-      mOnMouseLeftButtonDown(Mouse.GetPosition(this));
+      mOnMouseButtonDown(Mouse.GetPosition(this), MouseButton.Left);
     });
     public ICommand RemoveConnectionCommand => new DelegateCommand((object arg) => {
       var connection = arg as Connection;
