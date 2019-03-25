@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
-  class NodeInput: NodePort {
-    public NodeInput(string name): base(name) {
+  public class NodeInput: NodePort {
+    public readonly object InitialData;
+    public NodeInput(string name, object initialData): base(name) {
+      this.InitialData = initialData;
     }
   }
 }

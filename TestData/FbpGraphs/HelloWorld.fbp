@@ -1,0 +1,2 @@
+
+'Hello World' -> TEXT ConsoleWrite(ConsoleWrite:x=200,y=0)

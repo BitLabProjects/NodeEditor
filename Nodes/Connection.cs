@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
-  class Connection {
+  public class Connection {
     public Node FromNode { get; }
     public NodeOutput FromNodeOutput { get; }
     public Node ToNode { get; }

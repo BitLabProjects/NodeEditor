@@ -24,8 +24,9 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(AddConnectionCommandToken), () => new AddConnectionCommand(this));
       CommandManager.RegisterCommand(typeof(MoveNodeCommandToken), () => new MoveNodeCommand(this));
       CommandManager.RegisterCommand(typeof(UndoRedoCommandToken), () => new UndoRedoCommand(this));
+      CommandManager.RegisterCommand(typeof(PlayCommandToken), () => new PlayCommand(this));
 
-      SetGraph(mParseFbpFile(@"C:\Dati\Programmazione\Progetti\NodeEditor\TestData\FbpGraphs\Delete.fbp"));
+      SetGraph(mParseFbpFile(@"..\..\TestData\FbpGraphs\HelloWorld.fbp"));
     }
 
     private void mLoadTestGraph() {
@@ -33,10 +34,10 @@ namespace NodeEditor.App {
                            ImmutableArray<NodeInput>.Empty,
                            ImmutableArray<NodeOutput>.Empty);
       var node2 = new Node("Node 2", "type", new Point2(200, 150),
-                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
+                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1", null)).Add(new NodeInput("Input 2", null)),
                            ImmutableArray<NodeOutput>.Empty);
       var node3 = new Node("Node 3", "type", new Point2(-100, -80),
-                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1")).Add(new NodeInput("Input 2")),
+                           ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1", null)).Add(new NodeInput("Input 2", null)),
                            ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
       var node4 = new Node("Node 4", "type", new Point2(-50, 80),
                            ImmutableArray<NodeInput>.Empty,
@@ -70,7 +71,7 @@ namespace NodeEditor.App {
       for (var i = 0; i < result.Components.Count; i++) {
         var component = result.Components[i];
         var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
-                                                              select new NodeInput(x));
+                                                              select new NodeInput(x, component.InputPortInitialDatas.GetValueOrDefault(x, null)));
         var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
                                                                 select new NodeOutput(x));
 

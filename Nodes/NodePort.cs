@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
-  class NodePort {
+  public class NodePort {
     public string Name { get; }
 
     public NodePort(string name) {

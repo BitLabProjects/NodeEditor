@@ -62,6 +62,7 @@
     <Compile Include="App\Commands\MoveNodeCommand.cs" />
     <Compile Include="App\Commands\CommandManager.cs" />
     <Compile Include="App\Commands\AddConnectionCommand.cs" />
+    <Compile Include="App\Commands\PlayCommand.cs" />
     <Compile Include="App\Commands\UndoRedoCommand.cs" />
     <Compile Include="App\Commands\RemoveConnectionCommand.cs" />
     <Compile Include="App\NodeEditorApp.cs" />
@@ -76,7 +77,10 @@
     <Compile Include="Controls\InteractionHandlers\PanZoomHandler.cs" />
     <Compile Include="Controls\NodeEditorControl.cs" />
     <Compile Include="Controls\VisualTreeUtils.cs" />
+    <Compile Include="Fbp\Component.cs" />
+    <Compile Include="Fbp\Components\ConsoleWriteComponent.cs" />
     <Compile Include="Fbp\FbpParser.cs" />
+    <Compile Include="Fbp\Scheduler.cs" />
     <Compile Include="Geometry\View2D.cs" />
     <Compile Include="Geometry\Point2.cs" />
     <Compile Include="Nodes\Connection.cs" />
@@ -125,6 +129,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

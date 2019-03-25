@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
-  class Graph {
+  public class Graph {
     public ImmutableList<Node> Nodes { get; }
     public ImmutableList<Connection> Connections { get; }
 

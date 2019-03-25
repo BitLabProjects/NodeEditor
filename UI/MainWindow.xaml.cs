@@ -1,4 +1,5 @@
-﻿using NodeEditor.Controls;
+﻿using NodeEditor.App.Commands;
+using NodeEditor.Controls;
 using NodeEditor.Geometry;
 using NodeEditor.Nodes;
 using System;
@@ -30,5 +31,10 @@ namespace NodeEditor.UI {
     public ICommand RemoveConnectionCommand => new DelegateCommand((object conn) => {
       DataContext = (DataContext as Graph).RemoveConnection(conn as Connection);
     });
+
+    private void Button_Click(object sender, RoutedEventArgs e) {
+      var commandManager = AttachedProps.GetCommandManager(sender as DependencyObject);
+      commandManager.StartCommand(new PlayCommandToken());
+    }
   }
 }

@@ -9,7 +9,14 @@
         Title="MainWindow" Height="450" Width="800">
   <Grid controls:AttachedProps.CommandManager="{Binding CommandManager}"
         TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Auto" TextOptions.TextHintingMode="Auto">
-    <controls:NodeEditorControl Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal">
+      <Button Content="Play" Padding="5" Margin="2" Click="Button_Click" />
+    </StackPanel>
+    <controls:NodeEditorControl Grid.Row="1" Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
       <controls:NodeEditorControl.NodeContainerStyle>
         <Style>
           <Setter Property="controls:CartesianPanel.X" Value="{Binding Position.X}" />
@@ -186,6 +193,5 @@
         </DataTemplate>
       </controls:NodeEditorControl.ConnectionTemplate>
     </controls:NodeEditorControl>
-    <!--<controls:CustomPath />-->
   </Grid>
 </Window>

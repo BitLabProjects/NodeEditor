@@ -8,27 +8,29 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Fbp {
   public class FbpParseResult {
-    public readonly ImmutableList<Component> Components;
-    public FbpParseResult(ImmutableList<Component> components) {
+    public readonly ImmutableList<ParsedComponent> Components;
+    public FbpParseResult(ImmutableList<ParsedComponent> components) {
       this.Components = components;
     }
   }
-  public class Component {
+  public class ParsedComponent {
     public readonly string Name;
     public readonly string Type;
     public readonly ImmutableDictionary<string, string> Metadata;
     public ImmutableList<string> InputPorts;
     public ImmutableList<string> OutputPorts;
-    public ImmutableList<Tuple<string, Component, string>> OutputPortConnections;
-    public Component(string name, string type, ImmutableDictionary<string, string> metadata) {
+    public ImmutableList<Tuple<string, ParsedComponent, string>> OutputPortConnections;
+    public ImmutableDictionary<string, object> InputPortInitialDatas;
+    public ParsedComponent(string name, string type, ImmutableDictionary<string, string> metadata) {
       this.Name = name;
       this.Type = type;
       this.Metadata = metadata;
       InputPorts = ImmutableList<string>.Empty;
       OutputPorts = ImmutableList<string>.Empty;
-      OutputPortConnections = ImmutableList<Tuple<string, Component, string>>.Empty;
+      OutputPortConnections = ImmutableList<Tuple<string, ParsedComponent, string>>.Empty;
+      InputPortInitialDatas = ImmutableDictionary<string, object>.Empty;
     }
-    internal void ConnectTo(string senderPort, Component receiver, string receiverPort) {
+    internal void ConnectTo(string senderPort, ParsedComponent receiver, string receiverPort) {
       senderPort = senderPort.Substring(0, 1).ToUpperInvariant() + senderPort.Substring(1).ToLowerInvariant();
       receiverPort = receiverPort.Substring(0, 1).ToUpperInvariant() + receiverPort.Substring(1).ToLowerInvariant();
 
@@ -42,7 +44,11 @@ namespace NodeEditor.Fbp {
     }
 
     internal void SetInitialData(string receiverPort, object v) {
-      //throw new NotImplementedException();
+      if (!InputPorts.Contains(receiverPort)) {
+        InputPorts = InputPorts.Add(receiverPort);
+      }
+
+      InputPortInitialDatas = InputPortInitialDatas.Add(receiverPort, v);
     }
 
     internal void Setup() {
@@ -72,7 +78,7 @@ namespace NodeEditor.Fbp {
     }
 
     private static FbpParseResult Parse(string fbpProgram, Dictionary<string, object> initialData) {
-      var components = new Dictionary<string, Component>();
+      var components = new Dictionary<string, ParsedComponent>();
       var lines = fbpProgram.Split('\n');
       if (initialData == null) {
         initialData = new Dictionary<string, object>();
@@ -92,7 +98,7 @@ namespace NodeEditor.Fbp {
         var senderText = line.Substring(0, separatorIndex).Trim();
         var receiverText = line.Substring(separatorIndex + 2).Trim();
 
-        Component receiver = null;
+        ParsedComponent receiver = null;
         string receiverPort = null;
 
         if (Regex.IsMatch(receiverText, PORT_AND_COMPONENT)) {
@@ -135,6 +141,14 @@ namespace NodeEditor.Fbp {
 
         } else if (Regex.IsMatch(senderText, INITIAL_STRING_DATA)) {
           var match = Regex.Match(senderText, INITIAL_STRING_DATA);
+
+          /*
+          var metadata = ImmutableDictionary<string, string>.Empty.Add("value", match.Groups[2].Value);
+          var component = new ParsedComponent("Value", "string", metadata);
+          component.Setup();
+          components[component.Name] = component;
+          component.ConnectTo("Value", receiver, receiverPort);
+          */
           receiver.SetInitialData(receiverPort, match.Groups[2].Value);
 
         } else if (Regex.IsMatch(senderText, INITIAL_FLOAT_DATA)) {
@@ -150,12 +164,12 @@ namespace NodeEditor.Fbp {
         }
       }
 
-      return new FbpParseResult(ImmutableList<Component>.Empty.AddRange(components.Values));
+      return new FbpParseResult(ImmutableList<ParsedComponent>.Empty.AddRange(components.Values));
     }
 
-    static Component CreateOrRetrieveComponentFromString(string stringVersionOfComponent,
-                                                         int sourceLineNumber,
-                                                         Dictionary<string, Component> components) {
+    static ParsedComponent CreateOrRetrieveComponentFromString(string stringVersionOfComponent,
+                                                               int sourceLineNumber,
+                                                               Dictionary<string, ParsedComponent> components) {
       string componentName;
       string typeName = null;
 
@@ -173,7 +187,7 @@ namespace NodeEditor.Fbp {
         if (components.ContainsKey(componentName)) {
           throw new ArgumentException(string.Format("Invalid input on line {0}, process '{1}' has already been declared", sourceLineNumber, componentName));
         }
-        var component = new Component(componentName, typeName, metadata);
+        var component = new ParsedComponent(componentName, typeName, metadata);
         component.Setup();
         components[componentName] = component;
         return component;
