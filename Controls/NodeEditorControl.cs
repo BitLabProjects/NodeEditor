@@ -298,6 +298,20 @@ namespace NodeEditor.Controls {
       var connection = arg as Connection;
       AttachedProps.GetCommandManager(this).StartCommand(new RemoveConnectionCommandToken(null, connection));
     });
+    public ICommand EditInitialDataCommand => new DelegateCommand((object arg) => {
+      var control = arg as FrameworkElement;
+      var nodeInput = control.DataContext as NodeInput;
+      var node = VisualTreeUtils.GetDataContextOnParents<Node>(control);
+      if (nodeInput == null || node == null) {
+        // Could not determine context
+        return;
+      }
+
+      var inputDialog = new InputDialog("Insert the new initial data:", nodeInput.InitialData as string);
+      if (inputDialog.ShowDialog() == true) {
+        AttachedProps.GetCommandManager(this).StartCommand(new EditNodeInputInitialDataToken(null, node, nodeInput, inputDialog.Answer));
+      }
+    });
     #endregion
   }
 }

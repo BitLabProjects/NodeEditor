@@ -66,15 +66,44 @@
                       <DataTemplate>
                         <Grid Margin="0 4 6 0">
                           <Canvas>
-                            <!--<Path Canvas.Left="-7" Data="M 0,0 L 6,8 0,16 Z" Fill="#FAAA" />
-                            <Border Canvas.Left="-6" Background="#FAAA" controls:AttachedProps.RenderTransformOrigin="6" Height="16">
-                              <TextBlock Text="{Binding InitialData}" FontSize="10" TextWrapping="Wrap" MaxWidth="80" Margin="2 0" />
-                            </Border>-->
-                            <controls:Baloon Background="#FAAA" BorderBrush="#F888" BorderThickness="1"
-                                             Canvas.Left="-2"
-                                             controls:AttachedProps.RenderTransformOrigin="6" Height="16">
-                              <TextBlock Text="{Binding InitialData}" FontSize="10" TextWrapping="Wrap" MaxWidth="80" Margin="2 0" />
-                            </controls:Baloon>
+                            <Button ClickMode="Press" 
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+                                    Command="{Binding EditInitialDataCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
+                              <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                  <controls:Baloon BorderBrush="#F888" BorderThickness="1"
+                                                   Canvas.Left="-2"
+                                                   controls:AttachedProps.RenderTransformOrigin="6" Height="16">
+                                    <controls:Baloon.Background>
+                                      <SolidColorBrush Color="#FAAA" />
+                                    </controls:Baloon.Background>
+                                    <VisualStateManager.VisualStateGroups>
+                                      <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal">
+                                          <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(controls:Baloon.Background).(SolidColorBrush.Color)"
+                                                            To="#FAAA" Duration="0:0:0.2" />
+                                          </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="MouseOver">
+                                          <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(controls:Baloon.Background).(SolidColorBrush.Color)"
+                                                            To="SkyBlue" Duration="0:0:0.2" />
+                                          </Storyboard>
+                                        </VisualState>
+                                        <VisualState Name="Pressed">
+                                          <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="(controls:Baloon.Background).(SolidColorBrush.Color)"
+                                                            To="DeepSkyBlue" Duration="0:0:0.2" />
+                                          </Storyboard>
+                                        </VisualState>
+                                      </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <TextBlock Text="{Binding InitialData}" FontSize="10" TextWrapping="Wrap" MaxWidth="80" Margin="2 0" />
+                                  </controls:Baloon>
+                                </ControlTemplate>
+                              </Button.Template>
+                            </Button>
                           </Canvas>
                           <Button ClickMode="Press" 
                                   CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
@@ -87,19 +116,19 @@
                                       <VisualState Name="Normal">
                                         <Storyboard>
                                           <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
-                                                       To="0" Duration="0:0:0.2" />
+                                                           To="0" Duration="0:0:0.2" />
                                         </Storyboard>
                                       </VisualState>
                                       <VisualState Name="MouseOver">
                                         <Storyboard>
                                           <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
-                                                       To="1" Duration="0:0:0.3" />
+                                                           To="1" Duration="0:0:0.3" />
                                         </Storyboard>
                                       </VisualState>
                                       <VisualState Name="Pressed">
                                         <Storyboard>
                                           <DoubleAnimation Storyboard.TargetName="Background" Storyboard.TargetProperty="Opacity"
-                                                       To="0.6" Duration="0:0:0.3" />
+                                                           To="0.6" Duration="0:0:0.3" />
                                         </Storyboard>
                                       </VisualState>
                                     </VisualStateGroup>

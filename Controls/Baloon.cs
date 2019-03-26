@@ -9,6 +9,10 @@ using System.Windows.Media;
 
 namespace NodeEditor.Controls {
   public class Baloon : ContentControl {
+    static Baloon() {
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(Baloon), new FrameworkPropertyMetadata(typeof(Baloon)));
+    }
+
     public double ArrowSize {
       get { return (double)GetValue(ArrowSizeProperty); }
       set { SetValue(ArrowSizeProperty, value); }

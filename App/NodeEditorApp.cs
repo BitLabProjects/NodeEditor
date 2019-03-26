@@ -25,6 +25,7 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(MoveNodeCommandToken), () => new MoveNodeCommand(this));
       CommandManager.RegisterCommand(typeof(UndoRedoCommandToken), () => new UndoRedoCommand(this));
       CommandManager.RegisterCommand(typeof(PlayCommandToken), () => new PlayCommand(this));
+      CommandManager.RegisterCommand(typeof(EditNodeInputInitialDataToken), () => new EditNodeInputInitialDataCommand(this));
 
       SetGraph(mParseFbpFile(@"..\..\TestData\FbpGraphs\HelloWorld.fbp"));
     }

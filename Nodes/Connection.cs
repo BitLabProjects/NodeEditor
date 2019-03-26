@@ -26,8 +26,21 @@ namespace NodeEditor.Nodes {
       var toIsOld = (ToNode == oldN);
       if (fromIsOld || toIsOld) {
         // TODO Verify also connections: the node is not the same so they must be checked
-        return new Connection(fromIsOld ? newN : FromNode, FromNodeOutput,
-                              toIsOld ? newN : ToNode, ToNodeInput);
+        var newFromNodeOutput = FromNodeOutput;
+        if (fromIsOld) {
+          if (!newN.Outputs.Contains(newFromNodeOutput)) {
+            newFromNodeOutput = newN.Outputs.Where((x) => x.Name == newFromNodeOutput.Name).Single();
+          }
+        }
+        var newToNodeInput = ToNodeInput;
+        if (toIsOld) {
+          if (!newN.Inputs.Contains(newToNodeInput)) {
+            newToNodeInput = newN.Inputs.Where((x) => x.Name == newToNodeInput.Name).Single();
+          }
+        }
+
+        return new Connection(fromIsOld ? newN : FromNode, newFromNodeOutput,
+                              toIsOld ? newN : ToNode, newToNodeInput);
       } else {
         return this;
       }

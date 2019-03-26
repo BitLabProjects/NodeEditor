@@ -37,6 +37,10 @@ namespace NodeEditor.Nodes {
     public Node Move(Point2 newPosition) {
       return new Node(Name, Type, newPosition, Inputs, Outputs);
     }
+    public Node ReplaceInput(NodeInput oldNI, NodeInput newNI) {
+      var newInputs = Inputs.Replace(oldNI, newNI);
+      return new Node(Name, Type, Position, newInputs, Outputs);
+    }
     #endregion
   }
 }

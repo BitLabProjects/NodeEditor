@@ -59,6 +59,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="App\Commands\EditNodeInputInitialDataCommand.cs" />
     <Compile Include="App\Commands\MoveNodeCommand.cs" />
     <Compile Include="App\Commands\CommandManager.cs" />
     <Compile Include="App\Commands\AddConnectionCommand.cs" />
@@ -71,6 +72,9 @@
     <Compile Include="Controls\ConnectionPath.cs" />
     <Compile Include="Controls\ConnectionsPanel.cs" />
     <Compile Include="Controls\DelegateCommand.cs" />
+    <Compile Include="Controls\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\InteractionHandlers\ConnectNodeOutputHandler.cs" />
     <Compile Include="Controls\InteractionHandlers\EditorInteractionHandlerBase.cs" />
     <Compile Include="Controls\InteractionHandlers\IEditorInteractionHandler.cs" />
@@ -122,6 +126,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Controls\ControlTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\InputDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
