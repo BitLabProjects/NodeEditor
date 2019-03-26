@@ -13,10 +13,36 @@
       <RowDefinition Height="Auto" />
       <RowDefinition />
     </Grid.RowDefinitions>
-    <StackPanel Orientation="Horizontal">
-      <Button Content="Play" Padding="5" Margin="2" Click="Button_Click" />
-    </StackPanel>
-    <controls:NodeEditorControl Grid.Row="1" Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="200" />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Grid Grid.ColumnSpan="2" Background="#282828">
+      <Border VerticalAlignment="Bottom" BorderThickness="0 0 0 1" BorderBrush="#444" />
+      <StackPanel Orientation="Horizontal">
+        <Button Content="Play" Padding="5" Margin="2" Click="PlayButton_Click" />
+        <!--<Button Content="+" Padding="10 5" Margin="2" Click="PlusButton_Click" />-->
+      </StackPanel>
+    </Grid>
+    <Grid Grid.Row="1" Background="#282828" TextBlock.Foreground="#CCC">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Border HorizontalAlignment="Right" BorderThickness="0 0 1 0" BorderBrush="#444" Grid.RowSpan="2" />
+      <TextBlock Text="Toolbox" FontSize="16" Margin="5 2" />
+      <ItemsControl Grid.Row="1" ItemsSource="{Binding LoadedComponents}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding }" Margin="5" />
+              <Button Content="+" Padding="5 2" Margin="5 2" Click="Button_Click" />
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Grid>
+    <controls:NodeEditorControl Grid.Row="1" Grid.Column="1" Nodes="{Binding Graph.Nodes}" Connections="{Binding Graph.Connections}">
       <controls:NodeEditorControl.NodeContainerStyle>
         <Style>
           <Setter Property="controls:CartesianPanel.X" Value="{Binding Position.X}" />
@@ -99,7 +125,7 @@
                                         </VisualState>
                                       </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
-                                    <TextBlock Text="{Binding InitialData}" FontSize="10" TextWrapping="Wrap" MaxWidth="80" Margin="2 0" />
+                                    <TextBlock Text="{Binding InitialData}" FontSize="10" TextTrimming="CharacterEllipsis" MaxWidth="80" Margin="2 0" />
                                   </controls:Baloon>
                                 </ControlTemplate>
                               </Button.Template>

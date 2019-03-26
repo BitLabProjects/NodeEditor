@@ -23,6 +23,9 @@ namespace NodeEditor.Nodes {
     public Graph AddConnection(Connection c) {
       return new Graph(Nodes, Connections.Add(c));
     }
+    public Graph AddNode(Node n) {
+      return new Graph(Nodes.Add(n), Connections);
+    }
     public Graph ReplaceNode(Node oldN, Node newN) {
       var newConnections = Connections.ConvertAll<Connection>((c) => c.ReplaceNode(oldN, newN));
       return new Graph(Nodes.Replace(oldN, newN), newConnections);

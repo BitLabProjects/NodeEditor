@@ -21,4 +21,27 @@ namespace NodeEditor.Fbp {
       public static RunOutput Null { get { return new RunOutput(-1, null); } }
     }
   }
+  [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+  sealed class ComponentInputAttribute : Attribute {
+    public int Index { get; }
+    public string Name { get; }
+    public string Type { get; }
+    public ComponentInputAttribute(int index, string name, string type) {
+      this.Index = index;
+      this.Name = name;
+      this.Type = type;
+    }
+  }
+
+  [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+  sealed class ComponentOutputAttribute : Attribute {
+    public int Index { get; }
+    public string Name { get; }
+    public string Type { get; }
+    public ComponentOutputAttribute(int index, string name, string type) {
+      this.Index = index;
+      this.Name = name;
+      this.Type = type;
+    }
+  }
 }

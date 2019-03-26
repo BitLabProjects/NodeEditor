@@ -32,9 +32,20 @@ namespace NodeEditor.UI {
       DataContext = (DataContext as Graph).RemoveConnection(conn as Connection);
     });
 
-    private void Button_Click(object sender, RoutedEventArgs e) {
+    private void PlayButton_Click(object sender, RoutedEventArgs e) {
       var commandManager = AttachedProps.GetCommandManager(sender as DependencyObject);
       commandManager.StartCommand(new PlayCommandToken());
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e) {
+      var button = sender as Button;
+      var componentName = button.DataContext as string;
+      var commandManager = AttachedProps.GetCommandManager(button);
+      commandManager.StartCommand(new AddNodeCommandToken(null, componentName));
+    }
+    //private void PlusButton_Click(object sender, RoutedEventArgs e) {
+    //  var commandManager = AttachedProps.GetCommandManager(sender as DependencyObject);
+    //  commandManager.StartCommand(new PlayCommandToken());
+    //}
   }
 }

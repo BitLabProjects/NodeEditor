@@ -21,7 +21,8 @@ namespace NodeEditor.Fbp {
 
     private void InstantiateProcesses() {
       foreach(var node in graph.Nodes) {
-        var component = Assembly.GetCallingAssembly().CreateInstance("NodeEditor.Fbp.Components." + node.Type + "Component", false) as Component;
+        //var component = Assembly.GetCallingAssembly().CreateInstance("NodeEditor.Fbp.Components." + node.Type + "Component", false) as Component;
+        var component = Activator.CreateInstance(ComponentFinder.FindByName(node.Type)) as Component;
         if (component == null) {
           throw new ArgumentException($"Could not create process for component '{node.Type}'");
         }
@@ -49,9 +50,23 @@ namespace NodeEditor.Fbp {
 
         var result = process.Run();
         if (!result.IsNull) {
-          //TODO 
+
+          var nodeOutput = process.Node.Outputs[result.OutputIdx];
+
           //1. Find input(s) connected to result.Output
+          var connections = graph.Connections.Where((c) => c.FromNode == process.Node && c.FromNodeOutput == nodeOutput).ToList();
+
           //2. For each of them bind the input value
+          foreach(var c in connections) {
+            var toProcess = nodeToProcess[c.ToNode];
+            var inputIdx = c.ToNode.GetInputIndex(c.ToNodeInput);
+            var toProcessHasBecomeRunnable = toProcess.SetInputValue(inputIdx, result.Value);
+            if (toProcessHasBecomeRunnable) {
+              runnableProcesses = runnableProcesses.Add(toProcess);
+            }
+          }
+
+          //TODO 
           //3. If the node has all its input filled, move it to runnableProcesses
         }
       }

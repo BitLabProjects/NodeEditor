@@ -1,20 +1,26 @@
 ﻿using NodeEditor.App.Commands;
+using NodeEditor.Fbp;
 using NodeEditor.Geometry;
 using NodeEditor.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using INotifyPropertyChanged = System.ComponentModel.INotifyPropertyChanged;
 
 namespace NodeEditor.App {
   class NodeEditorApp : INotifyPropertyChanged {
     public Graph Graph { get; private set; }
-    public CommandManager CommandManager { get; }
     private ImmutableList<Graph> mHistory;
     private int mCurrentHistoryIndex;
+    public CommandManager CommandManager { get; }
+
+    //
+    public ImmutableArray<string> LoadedComponents { get; }
+
     public NodeEditorApp() {
       mHistory = ImmutableList<Graph>.Empty;
       mCurrentHistoryIndex = -1;
@@ -26,6 +32,9 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(UndoRedoCommandToken), () => new UndoRedoCommand(this));
       CommandManager.RegisterCommand(typeof(PlayCommandToken), () => new PlayCommand(this));
       CommandManager.RegisterCommand(typeof(EditNodeInputInitialDataToken), () => new EditNodeInputInitialDataCommand(this));
+      CommandManager.RegisterCommand(typeof(AddNodeCommandToken), () => new AddNodeCommand(this));
+
+      LoadedComponents = ComponentFinder.GetAllComponents();
 
       SetGraph(mParseFbpFile(@"..\..\TestData\FbpGraphs\HelloWorld.fbp"));
     }
@@ -100,7 +109,7 @@ namespace NodeEditor.App {
       return new Graph(nodes, connections);
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
     internal void SetGraph(Graph newGraph) {
       // Discard entries beyond current position
@@ -141,7 +150,7 @@ namespace NodeEditor.App {
 
     private void Notify(string propName) {
       if (PropertyChanged != null) {
-        PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propName));
+        PropertyChanged.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propName));
       }
     }
   }

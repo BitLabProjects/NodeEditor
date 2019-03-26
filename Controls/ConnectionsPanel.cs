@@ -125,7 +125,10 @@ namespace NodeEditor.Controls {
 
           // We're making an assumption on the visual tree here.
           // Invalidate the visual of the descendant, assuming it's a ConnectionPath which needs to do so
-          (VisualTreeHelper.GetChild((child as ContentPresenter), 0) as UIElement).InvalidateVisual();
+          var cp = child as ContentPresenter;
+          if (cp != null) {
+            (VisualTreeHelper.GetChild(cp, 0) as UIElement).InvalidateVisual();
+          }
 
           child.RenderTransform = new ScaleTransform(zoom, zoom);
           //child.Arrange(new Rect(fromPoint, childSize));

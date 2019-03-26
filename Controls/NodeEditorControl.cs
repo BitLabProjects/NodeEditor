@@ -202,6 +202,9 @@ namespace NodeEditor.Controls {
     }
 
     private void UpdateGrid() {
+      if (Root == null) {
+        return;
+      }
       var gridVisual = Root.FindResource("GridVisual") as Border;
       var gridVisualBrush = Root.Background as VisualBrush;
       var GridSize = Zoom * 30;
