@@ -127,5 +127,41 @@ namespace NodeEditor.Controls {
     public static readonly DependencyProperty CommandManagerProperty =
         DependencyProperty.RegisterAttached("CommandManager", typeof(ICommandManager), typeof(AttachedProps), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
     #endregion
+
+    #region RenderTransformOrigin
+    public static int GetRenderTransformOrigin(DependencyObject obj) {
+      return (int)obj.GetValue(RenderTransformOriginProperty);
+    }
+    public static void SetRenderTransformOrigin(DependencyObject obj, int value) {
+      obj.SetValue(RenderTransformOriginProperty, value);
+    }
+    public static readonly DependencyProperty RenderTransformOriginProperty =
+        DependencyProperty.RegisterAttached("RenderTransformOrigin", typeof(int), typeof(AttachedProps), new PropertyMetadata(0, RenderTransformOrigin_PropertyChanged));
+
+    private static void RenderTransformOrigin_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      var fe = d as FrameworkElement;
+      fe.RenderTransform = new TranslateTransform(0, 0);
+      Action fixRT = () => {
+        var tt = fe.RenderTransform as TranslateTransform;
+        double fx = 0, fy = 0;
+        switch (GetRenderTransformOrigin(fe)) {
+          case 0: case 1: case 2: fx = 0; break;
+          case 3: case 4: case 5: fx = -0.5; break;
+          case 6: case 7: case 8: fx = -1; break;
+        }
+        switch (GetRenderTransformOrigin(fe)) {
+          case 0: case 3: case 6: fy = 0; break;
+          case 1: case 4: case 7: fy = -0.5; break;
+          case 2: case 5: case 8: fy = -1; break;
+        }
+        tt.X = fe.ActualWidth * fx;
+        tt.Y = fe.ActualHeight * fy;
+      };
+      fe.SizeChanged += (s1, e1) => {
+        fixRT();
+      };
+      fixRT();
+    }
+    #endregion
   }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
   public class NodeInput: NodePort {
-    public readonly object InitialData;
+    public object InitialData { get; }
     public NodeInput(string name, object initialData): base(name) {
       this.InitialData = initialData;
     }

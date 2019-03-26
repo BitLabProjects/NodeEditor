@@ -47,8 +47,7 @@ namespace NodeEditor.Fbp {
         var process = runnableProcesses[0];
         runnableProcesses = runnableProcesses.RemoveAt(0);
 
-        object[] inputs = new object[] { "Hello world!" };
-        var result = process.Component.Run(inputs);
+        var result = process.Run();
         if (!result.IsNull) {
           //TODO 
           //1. Find input(s) connected to result.Output
@@ -68,6 +67,10 @@ namespace NodeEditor.Fbp {
       this.Node = node;
       this.Component = component;
       InputValues = new object[node.Inputs.Length];
+    }
+
+    public Component.RunOutput Run() {
+      return Component.Run(InputValues);
     }
 
     public bool SetInputValue(int inputIdx, object value) {

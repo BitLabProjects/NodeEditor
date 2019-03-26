@@ -66,6 +66,7 @@
     <Compile Include="App\Commands\UndoRedoCommand.cs" />
     <Compile Include="App\Commands\RemoveConnectionCommand.cs" />
     <Compile Include="App\NodeEditorApp.cs" />
+    <Compile Include="Controls\Baloon.cs" />
     <Compile Include="Controls\CartesianPanel.cs" />
     <Compile Include="Controls\ConnectionPath.cs" />
     <Compile Include="Controls\ConnectionsPanel.cs" />
