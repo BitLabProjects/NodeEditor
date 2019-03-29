@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NodeEditor.Geometry;
+using NodeEditor.Nodes;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,56 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace NodeEditor.Fbp {
-  public class FbpParseResult {
-    public readonly ImmutableList<ParsedComponent> Components;
-    public FbpParseResult(ImmutableList<ParsedComponent> components) {
-      this.Components = components;
-    }
-  }
-  public class ParsedComponent {
-    public readonly string Name;
-    public readonly string Type;
-    public readonly ImmutableDictionary<string, string> Metadata;
-    public ImmutableList<string> InputPorts;
-    public ImmutableList<string> OutputPorts;
-    public ImmutableList<Tuple<string, ParsedComponent, string>> OutputPortConnections;
-    public ImmutableDictionary<string, object> InputPortInitialDatas;
-    public ParsedComponent(string name, string type, ImmutableDictionary<string, string> metadata) {
-      this.Name = name;
-      this.Type = type;
-      this.Metadata = metadata;
-      InputPorts = ImmutableList<string>.Empty;
-      OutputPorts = ImmutableList<string>.Empty;
-      OutputPortConnections = ImmutableList<Tuple<string, ParsedComponent, string>>.Empty;
-      InputPortInitialDatas = ImmutableDictionary<string, object>.Empty;
-    }
-    internal void ConnectTo(string senderPort, ParsedComponent receiver, string receiverPort) {
-      senderPort = senderPort.Substring(0, 1).ToUpperInvariant() + senderPort.Substring(1).ToLowerInvariant();
-      receiverPort = receiverPort.Substring(0, 1).ToUpperInvariant() + receiverPort.Substring(1).ToLowerInvariant();
-
-      if (!OutputPorts.Contains(senderPort)) {
-        OutputPorts = OutputPorts.Add(senderPort);
-      }
-      if (!receiver.InputPorts.Contains(receiverPort)) {
-        receiver.InputPorts = receiver.InputPorts.Add(receiverPort);
-      }
-      OutputPortConnections = OutputPortConnections.Add(Tuple.Create(senderPort, receiver, receiverPort));
-    }
-
-    internal void SetInitialData(string receiverPort, object v) {
-      if (!InputPorts.Contains(receiverPort)) {
-        InputPorts = InputPorts.Add(receiverPort);
-      }
-
-      InputPortInitialDatas = InputPortInitialDatas.Add(receiverPort, v);
-    }
-
-    internal void Setup() {
-      //throw new NotImplementedException();
-    }
-  }
-
-  public static class FbpParser {
+  public static class FbpReader {
     const string COMMENT = @"^#.*$";
     const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(?:/[a-zA-Z]+)?)(?::([a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)$";
     const string PORT_AND_COMPONENT = @"^(\w+) (\w+)$";
@@ -73,7 +26,43 @@ namespace NodeEditor.Fbp {
 
     // https://noflojs.org/documentation/graphs/
 
-    public static FbpParseResult Parse(string fbpProgram) {
+    public static Graph Read(string fbpFullFileName) {
+      string fbpContent = System.IO.File.ReadAllText(fbpFullFileName);
+      var result = Fbp.FbpReader.Parse(fbpContent);
+
+      var nodes = ImmutableList<Node>.Empty;
+      for (var i = 0; i < result.Components.Count; i++) {
+        var component = result.Components[i];
+        var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
+                                                              select new NodeInput(x, component.InputPortInitialDatas.GetValueOrDefault(x, null)));
+        var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
+                                                                select new NodeOutput(x));
+
+        var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
+                             Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));
+
+        var node = new Node(component.Name, component.Type,
+                            pos, inputs, outputs);
+        nodes = nodes.Add(node);
+      }
+
+      var connections = ImmutableList<Connection>.Empty;
+      for (var i = 0; i < result.Components.Count; i++) {
+        var component = result.Components[i];
+        var fromNode = nodes.Where((x) => x.Name == component.Name).First();
+
+        foreach (var conn in component.OutputPortConnections) {
+          var fromNodeOutput = fromNode.Outputs.Where((x) => x.Name == conn.Item1).First();
+          var toNode = nodes.Where((x) => x.Name == conn.Item2.Name).First();
+          var toNodeInput = toNode.Inputs.Where((x) => x.Name == conn.Item3).First();
+          connections = connections.Add(new Connection(fromNode, fromNodeOutput, toNode, toNodeInput));
+        }
+      }
+
+      return new Graph(nodes, connections);
+    }
+
+    private static FbpParseResult Parse(string fbpProgram) {
       return Parse(fbpProgram, null);
     }
 
@@ -149,7 +138,7 @@ namespace NodeEditor.Fbp {
           components[component.Name] = component;
           component.ConnectTo("Value", receiver, receiverPort);
           */
-          receiver.SetInitialData(receiverPort, match.Groups[2].Value);
+          receiver.SetInitialData(receiverPort, match.Groups[2].Value.Replace("\\'", "'"));
 
         } else if (Regex.IsMatch(senderText, INITIAL_FLOAT_DATA)) {
           var match = Regex.Match(senderText, INITIAL_FLOAT_DATA);
@@ -199,6 +188,55 @@ namespace NodeEditor.Fbp {
           throw new ArgumentException(string.Format("Invalid input on line {0}, the process '{1}' has not been declared", sourceLineNumber, componentName));
         }
         return components[componentName];
+      }
+    }
+
+    private class FbpParseResult {
+      public readonly ImmutableList<ParsedComponent> Components;
+      public FbpParseResult(ImmutableList<ParsedComponent> components) {
+        this.Components = components;
+      }
+    }
+    private class ParsedComponent {
+      public readonly string Name;
+      public readonly string Type;
+      public readonly ImmutableDictionary<string, string> Metadata;
+      public ImmutableList<string> InputPorts;
+      public ImmutableList<string> OutputPorts;
+      public ImmutableList<Tuple<string, ParsedComponent, string>> OutputPortConnections;
+      public ImmutableDictionary<string, object> InputPortInitialDatas;
+      public ParsedComponent(string name, string type, ImmutableDictionary<string, string> metadata) {
+        this.Name = name;
+        this.Type = type;
+        this.Metadata = metadata;
+        InputPorts = ImmutableList<string>.Empty;
+        OutputPorts = ImmutableList<string>.Empty;
+        OutputPortConnections = ImmutableList<Tuple<string, ParsedComponent, string>>.Empty;
+        InputPortInitialDatas = ImmutableDictionary<string, object>.Empty;
+      }
+      internal void ConnectTo(string senderPort, ParsedComponent receiver, string receiverPort) {
+        senderPort = senderPort.Substring(0, 1).ToUpperInvariant() + senderPort.Substring(1).ToLowerInvariant();
+        receiverPort = receiverPort.Substring(0, 1).ToUpperInvariant() + receiverPort.Substring(1).ToLowerInvariant();
+
+        if (!OutputPorts.Contains(senderPort)) {
+          OutputPorts = OutputPorts.Add(senderPort);
+        }
+        if (!receiver.InputPorts.Contains(receiverPort)) {
+          receiver.InputPorts = receiver.InputPorts.Add(receiverPort);
+        }
+        OutputPortConnections = OutputPortConnections.Add(Tuple.Create(senderPort, receiver, receiverPort));
+      }
+
+      internal void SetInitialData(string receiverPort, object v) {
+        if (!InputPorts.Contains(receiverPort)) {
+          InputPorts = InputPorts.Add(receiverPort);
+        }
+
+        InputPortInitialDatas = InputPortInitialDatas.Add(receiverPort, v);
+      }
+
+      internal void Setup() {
+        //throw new NotImplementedException();
       }
     }
   }

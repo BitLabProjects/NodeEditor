@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace NodeEditor.App.Commands {
@@ -40,10 +41,23 @@ namespace NodeEditor.App.Commands {
         outputs = outputs.Add(new NodeOutput(attr.Name));
       }
 
-      var node = new Node(token.Type, token.Type, pos,
-                           inputs,
-                           outputs);
+      var node = new Node(FindUniqueName(mApp.Graph, token.Type), token.Type, pos,
+                          inputs, outputs);
       mApp.SetGraph(mApp.Graph.AddNode(node)); 
+    }
+
+    private string FindUniqueName(Graph currentGraph, string componentName) {
+      var maxN = 0;
+      var pattern = "^" + componentName + "([0-9]+)$";
+      for (var i=0; i<currentGraph.Nodes.Count; i++) {
+        var node = currentGraph.Nodes[i];
+
+        var match = Regex.Match(node.Name, pattern, RegexOptions.IgnoreCase);
+        if (match.Success) {
+          maxN = Math.Max(maxN, Int32.Parse(match.Groups[1].Value));
+        }
+      }
+      return $"{componentName}{maxN + 1}";
     }
   }
 }

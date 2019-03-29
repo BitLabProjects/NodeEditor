@@ -1,2 +1,2 @@
-
-'Hello World' -> TEXT ConsoleWrite(ConsoleWrite:x=200,y=0)
+﻿'Hello World!' -> Text ConsoleWrite1(ConsoleWrite:x=0,y=0)
+'It\'s me again :D' -> Text ConsoleWrite2(ConsoleWrite:x=91,y=102)

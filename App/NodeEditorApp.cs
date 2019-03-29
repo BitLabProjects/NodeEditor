@@ -14,6 +14,7 @@ using INotifyPropertyChanged = System.ComponentModel.INotifyPropertyChanged;
 namespace NodeEditor.App {
   class NodeEditorApp : INotifyPropertyChanged {
     public Graph Graph { get; private set; }
+    public string CurrentFbpFullFileName { get; private set; }
     private ImmutableList<Graph> mHistory;
     private int mCurrentHistoryIndex;
     public CommandManager CommandManager { get; }
@@ -33,10 +34,12 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(PlayCommandToken), () => new PlayCommand(this));
       CommandManager.RegisterCommand(typeof(EditNodeInputInitialDataToken), () => new EditNodeInputInitialDataCommand(this));
       CommandManager.RegisterCommand(typeof(AddNodeCommandToken), () => new AddNodeCommand(this));
+      CommandManager.RegisterCommand(typeof(SaveCommandToken), () => new SaveCommand(this));
 
       LoadedComponents = ComponentFinder.GetAllComponents();
 
-      SetGraph(mParseFbpFile(@"..\..\TestData\FbpGraphs\HelloWorld.fbp"));
+      CurrentFbpFullFileName = @"..\..\TestData\FbpGraphs\HelloWorld.fbp";
+      SetGraph(FbpReader.Read(CurrentFbpFullFileName));
     }
 
     private void mLoadTestGraph() {
@@ -71,42 +74,6 @@ namespace NodeEditor.App {
         .Add(new Connection(node3, node3.Outputs[0], node2, node2.Inputs[1]))
         .Add(new Connection(node4, node4.Outputs[1], node2, node2.Inputs[0]));
       SetGraph(new Graph(nodes, connections));
-    }
-
-    private Graph mParseFbpFile(string fbpFullFileName) {
-      string fbpContent = System.IO.File.ReadAllText(fbpFullFileName);
-      var result = Fbp.FbpParser.Parse(fbpContent);
-
-      var nodes = ImmutableList<Node>.Empty;
-      for (var i = 0; i < result.Components.Count; i++) {
-        var component = result.Components[i];
-        var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
-                                                              select new NodeInput(x, component.InputPortInitialDatas.GetValueOrDefault(x, null)));
-        var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
-                                                                select new NodeOutput(x));
-
-        var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
-                             Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));
-
-        var node = new Node(component.Name, component.Type,
-                            pos, inputs, outputs);
-        nodes = nodes.Add(node);
-      }
-
-      var connections = ImmutableList<Connection>.Empty;
-      for (var i = 0; i < result.Components.Count; i++) {
-        var component = result.Components[i];
-        var fromNode = nodes.Where((x) => x.Name == component.Name).First();
-
-        foreach (var conn in component.OutputPortConnections) {
-          var fromNodeOutput = fromNode.Outputs.Where((x) => x.Name == conn.Item1).First();
-          var toNode = nodes.Where((x) => x.Name == conn.Item2.Name).First();
-          var toNodeInput = toNode.Inputs.Where((x) => x.Name == conn.Item3).First();
-          connections = connections.Add(new Connection(fromNode, fromNodeOutput, toNode, toNodeInput));
-        }
-      }
-
-      return new Graph(nodes, connections);
     }
 
     public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;

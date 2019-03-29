@@ -64,6 +64,7 @@
     <Compile Include="App\Commands\MoveNodeCommand.cs" />
     <Compile Include="App\Commands\CommandManager.cs" />
     <Compile Include="App\Commands\AddConnectionCommand.cs" />
+    <Compile Include="App\Commands\SaveCommand.cs" />
     <Compile Include="App\Commands\PlayCommand.cs" />
     <Compile Include="App\Commands\UndoRedoCommand.cs" />
     <Compile Include="App\Commands\RemoveConnectionCommand.cs" />
@@ -87,7 +88,8 @@
     <Compile Include="Fbp\ComponentFinder.cs" />
     <Compile Include="Fbp\Components\ConsoleWriteComponent.cs" />
     <Compile Include="Fbp\Components\EnumerateFilesComponent.cs" />
-    <Compile Include="Fbp\FbpParser.cs" />
+    <Compile Include="Fbp\FbpReader.cs" />
+    <Compile Include="Fbp\FbpWriter.cs" />
     <Compile Include="Fbp\Scheduler.cs" />
     <Compile Include="Geometry\View2D.cs" />
     <Compile Include="Geometry\Point2.cs" />

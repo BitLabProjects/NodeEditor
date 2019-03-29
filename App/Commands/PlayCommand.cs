@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace NodeEditor.App.Commands {
-  class PlayCommandToken: ICommandToken {
+  class PlayCommandToken : ICommandToken {
     public PlayCommandToken() {
     }
   }

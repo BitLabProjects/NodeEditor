@@ -20,6 +20,7 @@
     <Grid Grid.ColumnSpan="2" Background="#282828">
       <Border VerticalAlignment="Bottom" BorderThickness="0 0 0 1" BorderBrush="#444" />
       <StackPanel Orientation="Horizontal">
+        <Button Content="Save" Padding="5" Margin="2" Click="SaveButton_Click" />
         <Button Content="Play" Padding="5" Margin="2" Click="PlayButton_Click" />
         <!--<Button Content="+" Padding="10 5" Margin="2" Click="PlusButton_Click" />-->
       </StackPanel>
