@@ -22,7 +22,7 @@ namespace NodeEditor.Fbp {
     }
   }
   [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-  sealed class ComponentInputAttribute : Attribute {
+  public sealed class ComponentInputAttribute : Attribute {
     public int Index { get; }
     public string Name { get; }
     public string Type { get; }
@@ -34,7 +34,7 @@ namespace NodeEditor.Fbp {
   }
 
   [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-  sealed class ComponentOutputAttribute : Attribute {
+  public sealed class ComponentOutputAttribute : Attribute {
     public int Index { get; }
     public string Name { get; }
     public string Type { get; }

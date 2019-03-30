@@ -17,14 +17,26 @@ namespace NodeEditor.Fbp {
           for (int j = 0; j < node.Inputs.Length; j++) {
             var nodeInput = node.Inputs[j];
             if (nodeInput.InitialData != null) {
-              string nodeDeclaration = "";
-              if (!declaredNodes.Contains(node)) {
-                nodeDeclaration = $"({node.Type}:x={node.Position.X},y={node.Position.Y})";
-              }
-              writer.WriteLine($"{getInitialDataAsString(nodeInput.InitialData)} -> {nodeInput.Name} {node.Name}{nodeDeclaration}");
+              writer.WriteLine($"{getInitialDataAsString(nodeInput.InitialData)} -> {nodeInput.Name} {node.Name}{getNodeDeclarationOrEmpty(node, declaredNodes)}");
             }
           }
         }
+
+        for (int i = 0; i < graph.Connections.Count; i++) {
+          var connection = graph.Connections[i];
+          var nodeFrom = $"{connection.FromNode.Name}{getNodeDeclarationOrEmpty(connection.FromNode, declaredNodes)} {connection.FromNodeOutput.Name}";
+          var nodeTo   = $"{connection.ToNodeInput.Name} {connection.ToNode.Name}{getNodeDeclarationOrEmpty(connection.ToNode, declaredNodes)}";
+          writer.WriteLine($"{nodeFrom} -> {nodeTo}");
+        }
+      }
+    }
+
+    private static string getNodeDeclarationOrEmpty(Node node, HashSet<Node> declaredNodes) {
+      if (!declaredNodes.Contains(node)) {
+        declaredNodes.Add(node);
+        return $"({node.Type}:x={node.Position.X},y={node.Position.Y})";
+      } else {
+        return "";
       }
     }
 

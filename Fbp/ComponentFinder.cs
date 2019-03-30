@@ -26,5 +26,15 @@ namespace NodeEditor.Fbp {
       }
       return null;
     }
+
+    public static ImmutableArray<ComponentInputAttribute> GetInputAttributes(Type componentType) {
+      var attributes = componentType.GetCustomAttributes(typeof(ComponentInputAttribute), true).Cast<ComponentInputAttribute>();
+      return ImmutableArray<ComponentInputAttribute>.Empty.AddRange(attributes);
+    }
+
+    public static ImmutableArray<ComponentOutputAttribute> GetOutputAttributes(Type componentType) {
+      var attributes = componentType.GetCustomAttributes(typeof(ComponentOutputAttribute), true).Cast<ComponentOutputAttribute>();
+      return ImmutableArray<ComponentOutputAttribute>.Empty.AddRange(attributes);
+    }
   }
 }

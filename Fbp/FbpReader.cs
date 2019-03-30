@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 namespace NodeEditor.Fbp {
   public static class FbpReader {
     const string COMMENT = @"^#.*$";
-    const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(?:/[a-zA-Z]+)?)(?::([a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)$";
+    const string COMPONENT_WITH_TYPE_DECLARATION = @"^(\w+)\(([a-zA-Z]+(?:/[a-zA-Z]+)?)(?::([a-zA-Z]+=-?[a-zA-Z0-9\.]+)(?:,([a-zA-Z]+=-?[a-zA-Z0-9\.]+))+)\)$";
     const string PORT_AND_COMPONENT = @"^(\w+) (\w+)$";
-    const string PORT_AND_COMPONENT_WITH_TYPE = @"^(\w+) (\w+\([a-zA-Z]+(/[a-zA-Z]+)?(:([a-zA-Z]+=[a-zA-Z0-9\.]+)(,([a-zA-Z]+=[a-zA-Z0-9\.]+))+)\))$";
+    const string PORT_AND_COMPONENT_WITH_TYPE = @"^(\w+) (\w+\([a-zA-Z]+(/[a-zA-Z]+)?(:([a-zA-Z]+=-?[a-zA-Z0-9\.]+)(,([a-zA-Z]+=-?[a-zA-Z0-9\.]+))+)\))$";
     const string COMPONENT_AND_PORT = @"^(\w+) (\w+)$";
-    const string COMPONENT_AND_PORT_WITH_TYPE = @"^(\w+\([a-zA-Z]+(?:/[a-zA-Z]+)?(?::(?:[a-zA-Z]+=[a-zA-Z0-9\.]+)(?:,(?:[a-zA-Z]+=[a-zA-Z0-9\.]+))+)\)) (\w+)$";
-    const string COMPONENT_METADATA = @"^([a-zA-Z]+)=([a-zA-Z0-9\.]+)$";
+    const string COMPONENT_AND_PORT_WITH_TYPE = @"^(\w+\([a-zA-Z]+(?:/[a-zA-Z]+)?(?::(?:[a-zA-Z]+=-?[a-zA-Z0-9\.]+)(?:,(?:[a-zA-Z]+=-?[a-zA-Z0-9\.]+))+)\)) (\w+)$";
+    const string COMPONENT_METADATA = @"^([a-zA-Z]+)=(-?[a-zA-Z0-9\.]+)$";
     const string INITIAL_BOOL_DATA = @"^(true|false)$";
     const string INITIAL_STRING_DATA = @"^('|"")(.+)\1$";
     const string INITIAL_FLOAT_DATA = @"^\d+\.\d+$";
@@ -28,11 +28,42 @@ namespace NodeEditor.Fbp {
 
     public static Graph Read(string fbpFullFileName) {
       string fbpContent = System.IO.File.ReadAllText(fbpFullFileName);
-      var result = Fbp.FbpReader.Parse(fbpContent);
+      var result = Parse(fbpContent);
 
       var nodes = ImmutableList<Node>.Empty;
       for (var i = 0; i < result.Components.Count; i++) {
         var component = result.Components[i];
+
+        var componentType = ComponentFinder.FindByName(component.Type);
+        if (componentType != null) {
+          var inputAttributes = ComponentFinder.GetInputAttributes(componentType);
+          var outputAttributes = ComponentFinder.GetOutputAttributes(componentType);
+          var inputAttributeNames = inputAttributes.Select((x) => x.Name).ToImmutableArray();
+          var outputAttributeNames = outputAttributes.Select((x) => x.Name).ToImmutableArray();
+
+          // 1. Add missing inputs and outputs: the fbp format serializes only connected ports
+          foreach (var ia in inputAttributes) {
+            if (!component.InputPorts.Contains(ia.Name)) {
+              component.InputPorts = component.InputPorts.Add(ia.Name);
+            }
+          }
+          foreach (var ia in outputAttributes) {
+            if (!component.OutputPorts.Contains(ia.Name)) {
+              component.OutputPorts = component.OutputPorts.Add(ia.Name);
+            }
+          }
+
+          // 2. Sort the ports
+          component.InputPorts.Sort((string a, string b) => inputAttributeNames.IndexOf(a).CompareTo(inputAttributeNames.IndexOf(b)));
+          component.OutputPorts.Sort((string a, string b) => outputAttributeNames.IndexOf(a).CompareTo(outputAttributeNames.IndexOf(b)));
+
+          // Other possibile validations that will be done as part of GraphTypeChecker:
+          // 1. Ports that are not present in the type
+          // 2. Component type not found
+          // 3. Port types not matching
+          // 4. Connections that are invalid due to mismatched types
+        }
+
         var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
                                                               select new NodeInput(x, component.InputPortInitialDatas.GetValueOrDefault(x, null)));
         var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts

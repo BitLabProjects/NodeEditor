@@ -90,6 +90,7 @@
     <Compile Include="Fbp\Components\EnumerateFilesComponent.cs" />
     <Compile Include="Fbp\FbpReader.cs" />
     <Compile Include="Fbp\FbpWriter.cs" />
+    <Compile Include="Fbp\GraphTypeChecker.cs" />
     <Compile Include="Fbp\Scheduler.cs" />
     <Compile Include="Geometry\View2D.cs" />
     <Compile Include="Geometry\Point2.cs" />

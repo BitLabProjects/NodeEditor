@@ -5,7 +5,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="local:NodeEditorControl">
-          <Grid x:Name="Root">
+          <Grid x:Name="Root" ClipToBounds="True">
             <Grid.Resources>
               <Border x:Key="GridVisual" Width="30" Height="30"
                       BorderThickness="1 1 0 0" BorderBrush="#303030" Background="#282828" />

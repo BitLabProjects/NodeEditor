@@ -1,2 +1,5 @@
 ﻿'Hello World!' -> Text ConsoleWrite1(ConsoleWrite:x=0,y=0)
-'It\'s me again :D' -> Text ConsoleWrite2(ConsoleWrite:x=91,y=102)
+'c:\temp\' -> Path EnumerateFiles2(EnumerateFiles:x=-138,y=204)
+'c:\programdata\arcadia\aseini' -> Path EnumerateFiles1(EnumerateFiles:x=-142,y=118)
+EnumerateFiles2 Files -> Text ConsoleWrite3(ConsoleWrite:x=92,y=206)
+EnumerateFiles1 Files -> Text ConsoleWrite2(ConsoleWrite:x=91,y=102)

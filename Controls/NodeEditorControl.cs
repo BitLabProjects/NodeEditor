@@ -312,7 +312,8 @@ namespace NodeEditor.Controls {
 
       var inputDialog = new InputDialog("Insert the new initial data:", nodeInput.InitialData as string);
       if (inputDialog.ShowDialog() == true) {
-        AttachedProps.GetCommandManager(this).StartCommand(new EditNodeInputInitialDataToken(null, node, nodeInput, inputDialog.Answer));
+        var newInitialData = string.IsNullOrEmpty(inputDialog.Answer) ? null : inputDialog.Answer;
+        AttachedProps.GetCommandManager(this).StartCommand(new EditNodeInputInitialDataToken(null, node, nodeInput, newInitialData));
       }
     });
     #endregion

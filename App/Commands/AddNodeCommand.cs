@@ -34,10 +34,10 @@ namespace NodeEditor.App.Commands {
       var outputs = ImmutableArray<NodeOutput>.Empty;
 
       var type = ComponentFinder.FindByName(token.Type);
-      foreach(ComponentInputAttribute attr in type.GetCustomAttributes(typeof(ComponentInputAttribute), true)) {
+      foreach(var attr in ComponentFinder.GetInputAttributes(type)) {
         inputs = inputs.Add(new NodeInput(attr.Name, null));
       }
-      foreach (ComponentOutputAttribute attr in type.GetCustomAttributes(typeof(ComponentOutputAttribute), true)) {
+      foreach (var attr in ComponentFinder.GetOutputAttributes(type)) {
         outputs = outputs.Add(new NodeOutput(attr.Name));
       }
 
