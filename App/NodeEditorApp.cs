@@ -35,6 +35,7 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(EditNodeInputInitialDataToken), () => new EditNodeInputInitialDataCommand(this));
       CommandManager.RegisterCommand(typeof(AddNodeCommandToken), () => new AddNodeCommand(this));
       CommandManager.RegisterCommand(typeof(SaveCommandToken), () => new SaveCommand(this));
+      CommandManager.RegisterCommand(typeof(ToggleNodeOutputIsStreamCommandToken), () => new ToggleNodeOutputIsStreamCommand(this));
 
       LoadedComponents = ComponentFinder.GetAllComponents();
 
@@ -51,10 +52,10 @@ namespace NodeEditor.App {
                            ImmutableArray<NodeOutput>.Empty);
       var node3 = new Node("Node 3", "type", new Point2(-100, -80),
                            ImmutableArray<NodeInput>.Empty.Add(new NodeInput("Input 1", null)).Add(new NodeInput("Input 2", null)),
-                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
+                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1", false)).Add(new NodeOutput("Output 2", false)));
       var node4 = new Node("Node 4", "type", new Point2(-50, 80),
                            ImmutableArray<NodeInput>.Empty,
-                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1")).Add(new NodeOutput("Output 2")));
+                           ImmutableArray<NodeOutput>.Empty.Add(new NodeOutput("Output 1", false)).Add(new NodeOutput("Output 2", false)));
       var nodes = ImmutableList<Node>
         .Empty
         .Add(node1)

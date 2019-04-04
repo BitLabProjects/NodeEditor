@@ -41,6 +41,10 @@ namespace NodeEditor.Nodes {
       var newInputs = Inputs.Replace(oldNI, newNI);
       return new Node(Name, Type, Position, newInputs, Outputs);
     }
+    public Node ReplaceOutput(NodeOutput oldNO, NodeOutput newNO) {
+      var newOutputs = Outputs.Replace(oldNO, newNO);
+      return new Node(Name, Type, Position, Inputs, newOutputs);
+    }
     #endregion
   }
 }

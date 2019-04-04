@@ -34,7 +34,7 @@ namespace NodeEditor.Fbp {
     private static string getNodeDeclarationOrEmpty(Node node, HashSet<Node> declaredNodes) {
       if (!declaredNodes.Contains(node)) {
         declaredNodes.Add(node);
-        return $"({node.Type}:x={node.Position.X},y={node.Position.Y})";
+        return $"({node.Type}:x={(int)node.Position.X},y={(int)node.Position.Y})";
       } else {
         return "";
       }

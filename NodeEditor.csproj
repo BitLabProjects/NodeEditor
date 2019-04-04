@@ -59,6 +59,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="App\Commands\ToggleNodeOutputIsStreamCommand.cs" />
     <Compile Include="App\Commands\EditNodeInputInitialDataCommand.cs" />
     <Compile Include="App\Commands\AddNodeCommand.cs" />
     <Compile Include="App\Commands\MoveNodeCommand.cs" />
@@ -86,7 +87,10 @@
     <Compile Include="Controls\VisualTreeUtils.cs" />
     <Compile Include="Fbp\Component.cs" />
     <Compile Include="Fbp\ComponentFinder.cs" />
+    <Compile Include="Fbp\Components\EnumerableFirstComponent.cs" />
+    <Compile Include="Fbp\Components\StringAppendComponent.cs" />
     <Compile Include="Fbp\Components\ConsoleWriteComponent.cs" />
+    <Compile Include="Fbp\Components\ProcessStartComponent.cs" />
     <Compile Include="Fbp\Components\EnumerateFilesComponent.cs" />
     <Compile Include="Fbp\FbpReader.cs" />
     <Compile Include="Fbp\FbpWriter.cs" />
@@ -95,6 +99,7 @@
     <Compile Include="Geometry\View2D.cs" />
     <Compile Include="Geometry\Point2.cs" />
     <Compile Include="Nodes\Connection.cs" />
+    <Compile Include="UI\Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

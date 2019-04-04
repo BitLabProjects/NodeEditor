@@ -294,8 +294,12 @@ namespace NodeEditor.Controls {
         return;
       }
 
-      mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
-      mOnMouseButtonDown(Mouse.GetPosition(this), MouseButton.Left);
+      if (Keyboard.GetKeyStates(Key.LeftShift) == KeyStates.Down) {
+        AttachedProps.GetCommandManager(this).StartCommand(new ToggleNodeOutputIsStreamCommandToken(null, node, nodeOutput));
+      } else {
+        mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
+        mOnMouseButtonDown(Mouse.GetPosition(this), MouseButton.Left);
+      }
     });
     public ICommand RemoveConnectionCommand => new DelegateCommand((object arg) => {
       var connection = arg as Connection;
@@ -315,6 +319,17 @@ namespace NodeEditor.Controls {
         var newInitialData = string.IsNullOrEmpty(inputDialog.Answer) ? null : inputDialog.Answer;
         AttachedProps.GetCommandManager(this).StartCommand(new EditNodeInputInitialDataToken(null, node, nodeInput, newInitialData));
       }
+    });
+    public ICommand ToggleNodeOutputIsStreamCommand => new DelegateCommand((object arg) => {
+      var control = arg as FrameworkElement;
+      var nodeOutput = control.DataContext as NodeOutput;
+      var node = VisualTreeUtils.GetDataContextOnParents<Node>(control);
+      if (nodeOutput == null || node == null) {
+        // Could not determine context
+        return;
+      }
+
+      AttachedProps.GetCommandManager(this).StartCommand(new ToggleNodeOutputIsStreamCommandToken(null, node, nodeOutput));
     });
     #endregion
   }

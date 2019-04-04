@@ -38,8 +38,9 @@ namespace NodeEditor.Fbp {
         if (componentType != null) {
           var inputAttributes = ComponentFinder.GetInputAttributes(componentType);
           var outputAttributes = ComponentFinder.GetOutputAttributes(componentType);
-          var inputAttributeNames = inputAttributes.Select((x) => x.Name).ToImmutableArray();
-          var outputAttributeNames = outputAttributes.Select((x) => x.Name).ToImmutableArray();
+          //var inputAttributeNames = inputAttributes.Select((x) => x.Name).ToImmutableArray();
+          var inputAttributeNames = inputAttributes.ToDictionary((x) => x.Name);
+          var outputAttributeNames = outputAttributes.ToDictionary((x) => x.Name);
 
           // 1. Add missing inputs and outputs: the fbp format serializes only connected ports
           foreach (var ia in inputAttributes) {
@@ -54,8 +55,8 @@ namespace NodeEditor.Fbp {
           }
 
           // 2. Sort the ports
-          component.InputPorts.Sort((string a, string b) => inputAttributeNames.IndexOf(a).CompareTo(inputAttributeNames.IndexOf(b)));
-          component.OutputPorts.Sort((string a, string b) => outputAttributeNames.IndexOf(a).CompareTo(outputAttributeNames.IndexOf(b)));
+          component.InputPorts = component.InputPorts.Sort((string a, string b) => inputAttributeNames[a].Index.CompareTo(inputAttributeNames[b].Index));
+          component.OutputPorts = component.OutputPorts.Sort((string a, string b) => outputAttributeNames[a].Index.CompareTo(outputAttributeNames[b].Index));
 
           // Other possibile validations that will be done as part of GraphTypeChecker:
           // 1. Ports that are not present in the type
@@ -67,7 +68,7 @@ namespace NodeEditor.Fbp {
         var inputs = ImmutableArray<NodeInput>.Empty.AddRange(from x in component.InputPorts
                                                               select new NodeInput(x, component.InputPortInitialDatas.GetValueOrDefault(x, null)));
         var outputs = ImmutableArray<NodeOutput>.Empty.AddRange(from x in component.OutputPorts
-                                                                select new NodeOutput(x));
+                                                                select new NodeOutput(x, false));
 
         var pos = new Point2(Double.Parse(component.Metadata.GetValueOrDefault("x", "0")),
                              Double.Parse(component.Metadata.GetValueOrDefault("y", "0")));
@@ -199,7 +200,7 @@ namespace NodeEditor.Fbp {
         typeName = match.Groups[2].Value;
 
         var metadata = ImmutableDictionary<string, string>.Empty;
-        for(var i=3; i<match.Groups.Count; i++) {
+        for (var i = 3; i < match.Groups.Count; i++) {
           var matchMeta = Regex.Match(match.Groups[i].Value, COMPONENT_METADATA);
           metadata = metadata.Add(matchMeta.Groups[1].Value, matchMeta.Groups[2].Value);
         }

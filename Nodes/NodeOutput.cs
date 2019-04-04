@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace NodeEditor.Nodes {
   public class NodeOutput : NodePort {
-    public NodeOutput(string name) : base(name) {
+    public bool IsStream { get; }
+
+    public NodeOutput(string name, bool isStream) : base(name) {
+      this.IsStream = isStream;
     }
   }
 }

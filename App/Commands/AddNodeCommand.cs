@@ -38,7 +38,7 @@ namespace NodeEditor.App.Commands {
         inputs = inputs.Add(new NodeInput(attr.Name, null));
       }
       foreach (var attr in ComponentFinder.GetOutputAttributes(type)) {
-        outputs = outputs.Add(new NodeOutput(attr.Name));
+        outputs = outputs.Add(new NodeOutput(attr.Name, false));
       }
 
       var node = new Node(FindUniqueName(mApp.Graph, token.Type), token.Type, pos,

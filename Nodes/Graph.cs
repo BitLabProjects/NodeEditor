@@ -16,6 +16,12 @@ namespace NodeEditor.Nodes {
       this.Connections = connections;
     }
 
+    #region Query
+    public ImmutableArray<Connection> GetAllConnectionsForNodeOutput(Node node, NodeOutput nodeOutput) {
+      return Connections.Where((c) => c.FromNode == node && c.FromNodeOutput == nodeOutput).ToImmutableArray();
+    }
+    #endregion
+
     #region Manipulation
     public Graph RemoveConnection(Connection c) {
       return new Graph(Nodes, Connections.Remove(c));

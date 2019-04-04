@@ -1,5 +1,12 @@
 ﻿'Hello World!' -> Text ConsoleWrite1(ConsoleWrite:x=0,y=0)
-'c:\temp\' -> Path EnumerateFiles2(EnumerateFiles:x=-138,y=204)
-'c:\programdata\arcadia\aseini' -> Path EnumerateFiles1(EnumerateFiles:x=-142,y=118)
-EnumerateFiles2 Files -> Text ConsoleWrite3(ConsoleWrite:x=92,y=206)
-EnumerateFiles1 Files -> Text ConsoleWrite2(ConsoleWrite:x=91,y=102)
+'C:\Dati\Programmazione\Progetti\NodeEditor\TestData\Images\' -> Path EnumerateFiles2(EnumerateFiles:x=-103,y=152)
+'c:\programdata\arcadia\aseini' -> Path EnumerateFiles1(EnumerateFiles:x=64,y=64)
+'C:\Dati\Programmi\ImageMagick-7.0.6-9-portable-Q16-x64\convert.exe' -> Path ProcessStart1(ProcessStart:x=617,y=151)
+' -resize 60x40! -blur 5x4 -resize 3000x2000! -filter Quadratic ' -> String2 StringAppend1(StringAppend:x=172,y=238)
+'out.jpg' -> String2 StringAppend2(StringAppend:x=91,y=364)
+EnumerateFiles2 Files -> String1 StringAppend1
+EnumerateFiles2 Files -> String1 StringAppend2
+EnumerateFiles1 Files -> Text ConsoleWrite2(ConsoleWrite:x=272,y=3)
+StringAppend1 Result -> String1 StringAppend3(StringAppend:x=422,y=342)
+StringAppend2 Result -> String2 StringAppend3
+StringAppend3 Result -> Arguments ProcessStart1
