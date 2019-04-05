@@ -32,6 +32,9 @@ namespace NodeEditor.Nodes {
     public Graph AddNode(Node n) {
       return new Graph(Nodes.Add(n), Connections);
     }
+    public Graph RemoveNode(Node n) {
+      return new Graph(Nodes.Remove(n), Connections.RemoveAll((c) => c.FromNode == n || c.ToNode == n));
+    }
     public Graph ReplaceNode(Node oldN, Node newN) {
       var newConnections = Connections.ConvertAll<Connection>((c) => c.ReplaceNode(oldN, newN));
       return new Graph(Nodes.Replace(oldN, newN), newConnections);

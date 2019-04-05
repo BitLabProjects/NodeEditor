@@ -59,6 +59,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="App\Commands\RemoveNodeCommand.cs" />
     <Compile Include="App\Commands\ToggleNodeOutputIsStreamCommand.cs" />
     <Compile Include="App\Commands\EditNodeInputInitialDataCommand.cs" />
     <Compile Include="App\Commands\AddNodeCommand.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Fbp\Component.cs" />
     <Compile Include="Fbp\ComponentFinder.cs" />
     <Compile Include="Fbp\Components\EnumerableFirstComponent.cs" />
+    <Compile Include="Fbp\Components\StringFormatComponent.cs" />
     <Compile Include="Fbp\Components\StringAppendComponent.cs" />
     <Compile Include="Fbp\Components\ConsoleWriteComponent.cs" />
     <Compile Include="Fbp\Components\ProcessStartComponent.cs" />

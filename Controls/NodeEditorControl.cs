@@ -331,6 +331,16 @@ namespace NodeEditor.Controls {
 
       AttachedProps.GetCommandManager(this).StartCommand(new ToggleNodeOutputIsStreamCommandToken(null, node, nodeOutput));
     });
+    public ICommand RemoveNodeCommand => new DelegateCommand((object arg) => {
+      var control = arg as FrameworkElement;
+      var node = control.DataContext as Node;
+      if (node == null) {
+        // Could not determine context
+        return;
+      }
+
+      AttachedProps.GetCommandManager(this).StartCommand(new RemoveNodeCommandToken(null, node));
+    });
     #endregion
   }
 }

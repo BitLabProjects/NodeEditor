@@ -34,6 +34,7 @@ namespace NodeEditor.App {
       CommandManager.RegisterCommand(typeof(PlayCommandToken), () => new PlayCommand(this));
       CommandManager.RegisterCommand(typeof(EditNodeInputInitialDataToken), () => new EditNodeInputInitialDataCommand(this));
       CommandManager.RegisterCommand(typeof(AddNodeCommandToken), () => new AddNodeCommand(this));
+      CommandManager.RegisterCommand(typeof(RemoveNodeCommandToken), () => new RemoveNodeCommand(this));
       CommandManager.RegisterCommand(typeof(SaveCommandToken), () => new SaveCommand(this));
       CommandManager.RegisterCommand(typeof(ToggleNodeOutputIsStreamCommandToken), () => new ToggleNodeOutputIsStreamCommand(this));
 

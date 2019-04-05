@@ -82,7 +82,44 @@
                     <TextBlock Text="{Binding Name}" FontFamily="Consolas" />
                     <TextBlock Text="{Binding Type}" Margin="0 1 0 0" FontSize="8" FontFamily="Consolas" Foreground="#333" />
                   </StackPanel>
-                  <Ellipse Grid.Column="1" Fill="#666" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 6 0" />
+                  <Button ClickMode="Press" Grid.Column="1"
+                          CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}" 
+                          Command="{Binding RemoveNodeCommand, RelativeSource={RelativeSource AncestorType=controls:NodeEditorControl}}">
+                    <Button.Template>
+                      <ControlTemplate TargetType="Button">
+                        <Grid>
+                          <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup Name="CommonStates">
+                              <VisualState Name="Normal">
+                                <Storyboard>
+                                  <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                  To="#666" Duration="0:0:0.2" />
+                                </Storyboard>
+                              </VisualState>
+                              <VisualState Name="MouseOver">
+                                <Storyboard>
+                                  <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                  To="#777" Duration="0:0:0.2" />
+                                </Storyboard>
+                              </VisualState>
+                              <VisualState Name="Pressed">
+                                <Storyboard>
+                                  <ColorAnimation Storyboard.TargetName="ellipse" Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                  To="#444" Duration="0:0:0.2" />
+                                </Storyboard>
+                              </VisualState>
+                            </VisualStateGroup>
+                          </VisualStateManager.VisualStateGroups>
+                          <Ellipse x:Name="ellipse" Width="8" Height="8" Stroke="#666"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 6 0">
+                            <Ellipse.Fill>
+                              <SolidColorBrush Color="#666" />
+                            </Ellipse.Fill>
+                          </Ellipse>
+                        </Grid>
+                      </ControlTemplate>
+                    </Button.Template>
+                  </Button>
                 </Grid>
 
                 <Grid Grid.Row="1">
