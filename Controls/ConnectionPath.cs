@@ -54,34 +54,6 @@ namespace NodeEditor.Controls {
           }
         }
       }
-
-      if (CaptureMouse()) {
-        mIsDragging = true;
-        mDragLastPoint = e.GetPosition(this);
-        e.Handled = true;
-
-        updateVisualState();
-      }
-    }
-
-    protected override void OnMouseMove(MouseEventArgs e) {
-      if (mIsDragging) {
-        var newPoint = e.GetPosition(this);
-        var delta = newPoint - mDragLastPoint;
-        mDragLastPoint = newPoint;
-
-        e.Handled = true;
-      }
-    }
-
-    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e) {
-      if (mIsDragging) {
-        mIsDragging = false;
-        ReleaseMouseCapture();
-        e.Handled = true;
-
-        updateVisualState();
-      }
     }
     #endregion
 

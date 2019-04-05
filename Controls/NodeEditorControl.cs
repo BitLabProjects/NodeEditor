@@ -294,7 +294,7 @@ namespace NodeEditor.Controls {
         return;
       }
 
-      if (Keyboard.GetKeyStates(Key.LeftShift) == KeyStates.Down) {
+      if ((Keyboard.GetKeyStates(Key.LeftShift) & KeyStates.Down) != 0) {
         AttachedProps.GetCommandManager(this).StartCommand(new ToggleNodeOutputIsStreamCommandToken(null, node, nodeOutput));
       } else {
         mCurrentHandler = new ConnectNodeOutputHandler(this, node, nodeOutput);
